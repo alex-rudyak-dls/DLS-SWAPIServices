@@ -17,16 +17,18 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = <<-DESC
+                    This pod provide access to SW GP Services API and
+                    IDP authentication server.
                        DESC
 
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/DLS-SWAPIServices"
+  s.homepage         = "https://github.com/alex-rudyak-dls/DLS-SWAPIServices"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
-  s.author           = { "Alex Rudyak" => "al.rudyak@gmail.com" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/DLS-SWAPIServices.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.author           = { "Alex Rudyak" => "aliaksandr.rudziak@digitallifesciences.co.uk" }
+  s.source           = { :git => "https://github.com/alex-rudyak-dls/DLS-SWAPIServices.git", :tag => s.version.to_s }
 
-  s.platform     = :ios, '7.0'
+  s.platform     = :ios, '8.0'
+  s.ios.deployment_target = "8.0"
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'
@@ -35,6 +37,13 @@ Pod::Spec.new do |s|
   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+    s.frameworks = 'Foundation'
+    s.dependency 'Realm', '0.96.3'
+    s.dependency 'AFNetworking', '~> 2'
+    s.dependency 'CocoaLumberjack', '~> 2.2.0'
+    s.dependency 'PromiseKit', '~> 1.5'
+    s.dependency 'EasyMapping', '0.15.4'
+    s.dependency 'Underscore.m', '0.2.1'
+    s.dependency 'NSDate-Escort', '1.5.3'
+    s.dependency 'ITDispatchManagement', '0.1.0'
 end
