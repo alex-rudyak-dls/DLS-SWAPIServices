@@ -8,6 +8,7 @@
 
 #import "DLSOrganisationsService.h"
 #import <PromiseKit/PromiseKit.h>
+#import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSOrganisationObject.h"
 #import "DLSOrganisationWrapper.h"
@@ -72,7 +73,7 @@
         [realm addOrUpdateObjectsFromArray:organisations];
         [realm commitWriteTransaction];
 
-        NSArray<DLSOrganisationWrapper *> *wrappers = _.array(organisations).map(^(DLSOrganisationObject *category) {
+        NSArray<DLSOrganisationWrapper *> *wrappers = [Underscore array](organisations).map(^(DLSOrganisationObject *category) {
             return [DLSOrganisationWrapper organisationWithObject:category];
         }).unwrap;
         return [PMKPromise promiseWithValue:wrappers];

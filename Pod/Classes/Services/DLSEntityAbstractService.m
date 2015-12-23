@@ -8,8 +8,10 @@
 
 #import "DLSEntityAbstractService.h"
 #import <PromiseKit/PromiseKit.h>
+#import "DLSPrivateHeader.h"
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSAuthenticationService.h"
+
 
 
 @implementation DLSEntityAbstractService

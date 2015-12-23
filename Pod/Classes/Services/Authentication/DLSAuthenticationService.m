@@ -8,13 +8,15 @@
 
 #import "DLSAuthenticationService.h"
 #import <PromiseKit/PromiseKit.h>
-#import <UIKit/UIKit.h>
+#import <Underscore.m/Underscore.h>
+#import "DLSPrivateHeader.h"
 #import "DLSApiErrors.h"
 #import "DLSApiConstants.h"
 #import "DLSAccessTokenWrapper.h"
 #import "DLSUserProfileObject.h"
 #import "DLSUserProfileWrapper.h"
 #import "DLSApplicationSettingsWrapper.h"
+
 
 NSString *const DLSAuthTokenPathKey = @"token";
 NSString *const DLSAuthLogoutPathKey = @"logout";
@@ -26,7 +28,7 @@ static NSString *const kDLSAuthGrantType = @"password";
 static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
 
-@interface DLSAuthenticationService () <UIWebViewDelegate>
+@interface DLSAuthenticationService ()
 
 @property (nonatomic, strong) DLSAccessTokenWrapper *token;
 @property (nonatomic, strong) dispatch_queue_t authorizationQueue;
@@ -114,7 +116,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         _credentials.username = appSettings.lastLoggedInUsername;
         return [self loadExistedTokens];
     }).thenOn(self.authorizationQueue, ^(NSArray<DLSAccessTokenWrapper *> *accessTokens) {
-        DLSAccessTokenWrapper *validToken = _.array(accessTokens).filter(^BOOL (DLSAccessTokenWrapper *token) {
+        DLSAccessTokenWrapper *validToken = [Underscore array](accessTokens).filter(^BOOL (DLSAccessTokenWrapper *token) {
             return token.isValid;
         }).first;
         if (validToken) {

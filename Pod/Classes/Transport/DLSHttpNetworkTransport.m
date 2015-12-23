@@ -8,6 +8,7 @@
 
 #import "DLSHttpNetworkTransport.h"
 #import <PromiseKit/PromiseKit.h>
+#import "DLSPrivateHeader.h"
 #import <ITDispatchManagement/ITDispatchManagement.h>
 #import "NSString+DLSEntityParsing.h"
 #import "DLSApiErrors.h"

@@ -8,6 +8,7 @@
 
 #import "DLSCategoriesService.h"
 #import <PromiseKit/PromiseKit.h>
+#import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiConstants.h"
 #import "DLSCategoryObject.h"
@@ -41,7 +42,7 @@
         [realm addOrUpdateObjectsFromArray:categories];
         [realm commitWriteTransaction];
 
-        NSArray<DLSCategoryWrapper *> *wrappers = _.array(categories).map(^(DLSCategoryObject *category) {
+        NSArray<DLSCategoryWrapper *> *wrappers = [Underscore array](categories).map(^(DLSCategoryObject *category) {
             return [DLSCategoryWrapper categoryWithObject:category];
         }).unwrap;
         return [PMKPromise promiseWithValue:wrappers];

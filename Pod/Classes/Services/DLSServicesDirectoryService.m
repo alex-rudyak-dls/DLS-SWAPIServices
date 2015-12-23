@@ -9,6 +9,7 @@
 #import "DLSServicesDirectoryService.h"
 #import "DLSEntityAbstractService_Private.h"
 #import <PromiseKit/PromiseKit.h>
+#import <Underscore.m/Underscore.h>
 #import "DLSAppPaths.h"
 #import "DLSDirectoryServiceObject.h"
 #import "DLSDirectoryServiceWrapper.h"
@@ -71,7 +72,7 @@
 
     }).thenOn(self.fetchQueue, ^(NSArray *response) {
         NSArray<DLSDirectoryServiceObject *> *directoryServices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSDirectoryServiceObject objectMapping]];
-        return _.array(directoryServices).map(^(DLSDirectoryServiceObject *directoryService) {
+        return [Underscore array](directoryServices).map(^(DLSDirectoryServiceObject *directoryService) {
             return [DLSDirectoryServiceWrapper directoryServiceWithObject:directoryService];
         }).filter([self filterBlockForKey:filterKey])
         .sort([self sortBlockForKey:sortKey])
@@ -110,7 +111,7 @@
 
     }).thenOn(self.fetchQueue, ^(NSArray *response) {
         NSArray<DLSDirectoryServiceObject *> *directoryServices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSDirectoryServiceObject objectMapping]];
-        return _.array(directoryServices).map(^(DLSDirectoryServiceObject *directoryService) {
+        return [Underscore array](directoryServices).map(^(DLSDirectoryServiceObject *directoryService) {
             return [DLSDirectoryServiceWrapper directoryServiceWithObject:directoryService];
         }).filter([self filterBlockForKey:filterKey])
         .sort([self sortBlockForKey:sortKey])
