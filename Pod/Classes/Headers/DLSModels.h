@@ -17,11 +17,12 @@
 #import "DLSOrganisationWrapper.h"
 #import "DLSTimetableWrapper.h"
 #import "DLSUserProfileWrapper.h"
+#import "DLSPracticeWrapper.h"
+#import "DLSPracticeShortWrapper.h"
 
 #import "DLSAnonymousAppointmentObject.h"
 #import "DLSAppointmentObject.h"
 #import "DLSContactObject.h"
 #import "DLSFeedbackObject.h"
-#import "DLSPracticeObject.h"
 
 #endif /* DLSModels_h */
