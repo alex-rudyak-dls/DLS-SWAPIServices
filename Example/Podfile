@@ -1,0 +1,13 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'DLS-SWAPIServices_Example', :exclusive => true do
+  pod "DLS-SWAPIServices", :path => "../"
+end
+
+target 'DLS-SWAPIServices_Tests', :exclusive => true do
+  pod "DLS-SWAPIServices", :path => "../"
+
+  pod 'Specta'
+  pod 'Expecta'
+end
