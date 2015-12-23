@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = "DLS-SWAPIServices"
   s.version          = "0.1.0"
-  s.summary          = "A short description of DLS-SWAPIServices."
+  s.summary          = "Set of classes to provide iOS app access to SW GP Services API"
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
     'DLS-SWAPIServices' => ['Pod/Assets/*.png']
   }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
+# s.public_header_files = 'Pod/Classes/Headers/*.h'
     s.frameworks = 'Foundation'
     s.dependency 'Realm', '0.96.3'
     s.dependency 'AFNetworking', '~> 2'

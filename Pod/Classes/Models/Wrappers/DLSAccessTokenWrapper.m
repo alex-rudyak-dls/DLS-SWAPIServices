@@ -7,7 +7,7 @@
 //
 
 #import "DLSAccessTokenWrapper.h"
-#import <NSDate+Escort.h>
+#import <NSDate-Escort/NSDate+Escort.h>
 
 
 @implementation DLSAccessTokenWrapper
