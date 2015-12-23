@@ -1,0 +1,20 @@
+PODS:
+  - DLS-SWAPIServices (0.1.0)
+  - Expecta (1.0.5)
+  - Specta (1.0.5)
+
+DEPENDENCIES:
+  - DLS-SWAPIServices (from `../`)
+  - Expecta
+  - Specta
+
+EXTERNAL SOURCES:
+  DLS-SWAPIServices:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  DLS-SWAPIServices: c1df7bdf97e0665d73a9c8f4071435a48972371b
+  Expecta: e1c022fcd33910b6be89c291d2775b3fe27a89fe
+  Specta: ac94d110b865115fe60ff2c6d7281053c6f8e8a2
+
+COCOAPODS: 0.39.0
