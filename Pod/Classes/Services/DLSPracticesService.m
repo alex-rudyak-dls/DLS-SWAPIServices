@@ -8,6 +8,7 @@
 
 #import "DLSPracticesService.h"
 #import <PromiseKit/PromiseKit.h>
+#import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiConstants.h"
 #import "DLSPracticeObject.h"
@@ -128,7 +129,7 @@
             [realm commitWriteTransaction];
 
             practices = [practices sortedArrayUsingDescriptors:@[[self nssortDescriptorForKey:sortKey]]];
-            NSArray<DLSPracticeWrapper *> *wrappers = _.array(practices).map(^(DLSPracticeObject *practice) {
+            NSArray<DLSPracticeWrapper *> *wrappers = [Underscore array](practices).map(^(DLSPracticeObject *practice) {
                 return [wrapperFactory practiceWithObject:practice];
             }).unwrap;
             return [PMKPromise promiseWithValue:wrappers];
