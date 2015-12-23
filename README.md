@@ -22,7 +22,7 @@ pod "DLS-SWAPIServices"
 
 ## Author
 
-Alex Rudyak, al.rudyak@gmail.com
+Alex Rudyak, aliaksandr.rudziak@digitallifesciences.co.uk
 
 ## License
 
