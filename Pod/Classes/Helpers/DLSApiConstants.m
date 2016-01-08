@@ -9,6 +9,7 @@
 #import "DLSApiConstants.h"
 
 NSString *const DLSApiRedirectUrlString = @"southworcestershiregp://";
+NSString *const DLSApiRequestSource = @"iOS";
 
 NSString *const DLSRestorePasswordUrlString = @"https://id.swgpservices.co.uk/resetting/request";
 NSString *const DLSRegisterUrlString = @"https://id.swgpservices.co.uk/register";
