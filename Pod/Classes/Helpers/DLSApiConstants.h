@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 OBJC_EXTERN NSString *const DLSApiRedirectUrlString;
+OBJC_EXTERN NSString *const DLSApiRequestSource;
 
 OBJC_EXTERN NSString *const DLSRestorePasswordUrlString;
 OBJC_EXTERN NSString *const DLSRegisterUrlString;

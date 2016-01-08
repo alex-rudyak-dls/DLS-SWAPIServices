@@ -12,6 +12,7 @@
 #import <ITDispatchManagement/ITDispatchManagement.h>
 #import "NSString+DLSEntityParsing.h"
 #import "DLSApiErrors.h"
+#import "DLSApiConstants.h"
 
 
 @implementation DLSHttpNetworkTransport {
@@ -93,7 +94,9 @@ static dispatch_queue_t TransportQueue;
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
         it_dispatch_on_queue(TransportQueue, ^{
             NSString *const urlPath = [self urlPath];
-            [self.sessionManager POST:urlPath parameters:entity success:^(NSURLSessionDataTask *task, id responseObject) {
+            NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
+            mutableEntity[@"request_source"] = DLSApiRequestSource;
+            [self.sessionManager POST:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
                 DDLogVerbose(@"[HTTP:Transport:CREATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
                 resolve(responseObject);
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -113,7 +116,9 @@ static dispatch_queue_t TransportQueue;
         it_dispatch_on_queue(TransportQueue, ^{
             //todo: fix for formatted urlPath
             NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
-            [self.sessionManager PUT:urlPath parameters:entity success:^(NSURLSessionDataTask *task, id responseObject) {
+            NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
+            mutableEntity[@"request_source"] = DLSApiRequestSource;
+            [self.sessionManager PUT:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
                 DDLogVerbose(@"[HTTP:Transport:UPDATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
                 resolve(responseObject);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -133,7 +138,9 @@ static dispatch_queue_t TransportQueue;
         it_dispatch_on_queue(TransportQueue, ^{
             //todo: fix for formatted urlPath
             NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
-            [self.sessionManager PATCH:urlPath parameters:entity success:^(NSURLSessionDataTask *task, id responseObject) {
+            NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
+            mutableEntity[@"request_source"] = DLSApiRequestSource;
+            [self.sessionManager PATCH:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
                 DDLogVerbose(@"[HTTP:Transport:PATCH]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
                 resolve(responseObject);
             } failure:^(NSURLSessionDataTask *task, NSError *error) {
