@@ -12,7 +12,6 @@
 #import "DLSAppointmentObject.h"
 #import "DLSAuthenticationService.h"
 #import "DLSAnonymousAppointmentObject.h"
-#import "DLSApiConstants.h"
 
 
 @implementation DLSAppointmentsService
@@ -54,9 +53,8 @@
 - (PMKPromise *)createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest
 {
     return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        NSMutableDictionary *appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAppointmentObject objectMapping]].mutableCopy;
-        appointmentDict[@"request_source"] = DLSApiRequestSource;
-        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+        NSDictionary *appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAppointmentObject objectMapping]];
+        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
         return [self.transport create:appointmentDict];
     }).thenOn(self.fetchQueue, ^(id response) {
         DLSAnonymousAppointmentObject *registeredAppointment = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSAnonymousAppointmentObject objectMapping]];
@@ -73,8 +71,7 @@
 - (PMKPromise *)createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest
 {
     return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        NSMutableDictionary *appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAnonymousAppointmentObject objectMapping]].mutableCopy;
-        appointmentDict[@"request_source"] = DLSApiRequestSource;
+        NSDictionary *appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
         return [self.transport create:appointmentDict];
     }).thenOn(self.fetchQueue, ^(id response) {
