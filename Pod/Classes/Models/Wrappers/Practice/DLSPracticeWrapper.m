@@ -32,7 +32,7 @@
         _area = object.area;
         _websiteURL = [NSURL URLWithString:object.website];
         _registrationURL = [NSURL URLWithString:object.registrationLink];
-        //        _imageURL = [NSURL URLWithString:object.imageURL];
+        _imageURL = [NSURL URLWithString:object.imageURL];
         _telephone = object.telephone;
         _openingTimes = object.openingTimes;
     }

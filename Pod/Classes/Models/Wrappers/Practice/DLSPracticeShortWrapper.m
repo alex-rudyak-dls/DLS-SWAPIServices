@@ -23,7 +23,7 @@
     if (self) {
         _practiceId = object.id;
         _name = object.name;
-        //        _imageURL = [NSURL URLWithString:object.imageURL];
+        _imageURL = [NSURL URLWithString:object.imageURL];
     }
     return self;
 }
