@@ -10,7 +10,6 @@
 
 
 @implementation DLSPracticeObject
-@synthesize openingTimesArray = _openingTimesArray;
 
 + (EKObjectMapping *)objectMapping
 {
@@ -19,14 +18,14 @@
         [mapping mapPropertiesFromDictionary:@{
                                                @"phone": @"telephone",
                                                @"registration_link": @"registrationLink",
-                                               @"image_url": @"imageURL"
+                                               @"image_url": @"imageURL",
+                                               @"opening_times": @"openingTimes"
                                                }];
         [mapping mapKeyPath:@"id" toProperty:@"id" withValueBlock:^id(NSString *key, NSNumber *value) {
             return [value stringValue];
         } reverseBlock:^id(NSString *value) {
             return @([value integerValue]);
         }];
-        [mapping hasMany:[DLSTimetableObject class] forKeyPath:@"opening_times" forProperty:@"openingTimesArray"];
     }];
 }
 
@@ -47,21 +46,6 @@
 + (NSArray *)ignoredProperties
 {
     return @[ @"openingTimesArray" ];
-}
-
-- (void)setOpeningTimesArray:(NSArray<DLSTimetableObject> *)openingTimesArray
-{
-    _openingTimesArray = openingTimesArray;
-    RLMArray *openingTimes = [[RLMArray alloc] initWithObjectClassName:[DLSTimetableObject className]];
-    [openingTimesArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-        [openingTimes addObject:obj];
-    }];
-    self.openingTimes = (RLMArray<DLSTimetableObject> *)openingTimes;
-}
-
-- (NSArray<DLSTimetableObject> *)openingTimesArray
-{
-    return _openingTimesArray;
 }
 
 @end

@@ -34,12 +34,7 @@
         _registrationURL = [NSURL URLWithString:object.registrationLink];
         //        _imageURL = [NSURL URLWithString:object.imageURL];
         _telephone = object.telephone;
-
-        NSMutableArray *openingTimes = [NSMutableArray arrayWithCapacity:object.openingTimes.count];
-        for (DLSTimetableObject *timetable in object.openingTimes) {
-            [openingTimes addObject:[DLSTimetableWrapper timetableWithObject:timetable]];
-        }
-        _openingTimes = [NSArray arrayWithArray:openingTimes];
+        _openingTimes = object.openingTimes;
     }
     return self;
 }
@@ -63,7 +58,7 @@
 
 - (NSString *)openingTimesDescription
 {
-    return [[self.openingTimes firstObject] shortTimetable];
+    return self.openingTimes;
 }
 
 @end

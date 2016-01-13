@@ -23,11 +23,9 @@
 @property NSString *postcode;
 @property NSString *website;
 @property NSString *telephone;
-@property RLMArray<DLSTimetableObject *><DLSTimetableObject> *openingTimes;
+@property NSString *openingTimes;
 @property NSString *registrationLink;
 @property NSString *imageURL;
-
-@property NSArray<DLSTimetableObject> *openingTimesArray;
 
 @end
 
