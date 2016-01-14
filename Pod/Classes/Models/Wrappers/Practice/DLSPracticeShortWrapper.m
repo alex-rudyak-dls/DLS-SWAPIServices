@@ -24,6 +24,7 @@
         _practiceId = object.id;
         _name = object.name;
         _imageURL = [NSURL URLWithString:object.imageURL];
+        _partOfHub = object.partOfHub;
     }
     return self;
 }

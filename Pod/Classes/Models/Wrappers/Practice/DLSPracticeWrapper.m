@@ -35,6 +35,7 @@
         _imageURL = [NSURL URLWithString:object.imageURL];
         _telephone = object.telephone;
         _openingTimes = object.openingTimes;
+        _partOfHub = object.partOfHub;
     }
     return self;
 }

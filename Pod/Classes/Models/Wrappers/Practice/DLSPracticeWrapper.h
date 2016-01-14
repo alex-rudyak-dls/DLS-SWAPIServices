@@ -37,6 +37,7 @@
 @property (nonatomic, readonly) NSURL *imageURL;
 @property (nonatomic, readonly) NSString *telephone;
 @property (nonatomic, readonly) NSString *openingTimes;
+@property (nonatomic, readonly, getter=isPartOfHub) BOOL partOfHub;
 
 @property (nonatomic, readonly) NSString *fullAddress;
 

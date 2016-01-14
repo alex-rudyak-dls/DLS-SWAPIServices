@@ -19,7 +19,8 @@
                                                @"phone": @"telephone",
                                                @"registration_link": @"registrationLink",
                                                @"image_url": @"imageURL",
-                                               @"opening_times": @"openingTimes"
+                                               @"opening_times": @"openingTimes",
+                                               @"part_of_hub": @"partOfHub"
                                                }];
         [mapping mapKeyPath:@"id" toProperty:@"id" withValueBlock:^id(NSString *key, NSNumber *value) {
             return [value stringValue];

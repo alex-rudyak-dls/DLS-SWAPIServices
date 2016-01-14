@@ -26,6 +26,7 @@
 @property NSString *openingTimes;
 @property NSString *registrationLink;
 @property NSString *imageURL;
+@property BOOL partOfHub;
 
 @end
 
