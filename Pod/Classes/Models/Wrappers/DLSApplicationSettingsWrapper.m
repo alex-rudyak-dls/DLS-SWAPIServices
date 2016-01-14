@@ -26,6 +26,7 @@
         [self setTermsOfUseAccepted:object.isTermsOfUseAccepted];
         [self setLastStartupDate:object.lastStartup];
         [self setLastLoggedInUsername:object.lastUsername];
+        [self setContentVersion:object.contentVersion];
     }
     return self;
 }

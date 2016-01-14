@@ -19,6 +19,8 @@
 
 @property NSDate *lastStartup;
 
+@property NSInteger contentVersion;
+
 @end
 
 // This protocol enables typed collections. i.e.:

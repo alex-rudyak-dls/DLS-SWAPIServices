@@ -18,6 +18,7 @@
 #import "DLSPracticesService.h"
 #import "DLSFeedbacksService.h"
 #import "DLSContactsService.h"
+#import "DLSContentTextService.h"
 
 
 @interface DLSServiceLayer : NSObject
@@ -33,6 +34,7 @@
 @property (nonatomic, strong) id<DLSPracticesService> practicesService;
 @property (nonatomic, strong) id<DLSFeedbacksService> feedbacksService;
 @property (nonatomic, strong) id<DLSContactsService> contactsService;
+@property (nonatomic, strong) id<DLSContentTextService> contentTextService;
 
 - (PMKPromise *)initialize;
 
