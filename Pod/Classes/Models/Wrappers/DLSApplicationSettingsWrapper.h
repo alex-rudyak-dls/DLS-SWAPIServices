@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSDate *lastStartupDate;
 
+@property (nonatomic, assign) NSInteger contentVersion;
+
 @property (nonatomic, assign, getter=isTermsOfUseAccepted) BOOL termsOfUseAccepted;
 
 + (instancetype)appSettingsWithObject:(DLSApplicationSettingsObject *)object;
