@@ -28,6 +28,8 @@ NSString *const DLSApiPracticesRoute = @"/practices";
 NSString *const DLSApiPracticesInOrganisationRoute = @"orgs/{ORG_ID}/practices";
 NSString *const DLSApiFeedbackRoute = @"/feedback";
 NSString *const DLSApiContactRoute = @"/contact";
+NSString *const DLSApiContentTextVersionRoute = @"/apps/ios-version.json";
+NSString *const DLSApiContentTextRoute = @"/apps/ios.json";
 
 #pragma mark -
 

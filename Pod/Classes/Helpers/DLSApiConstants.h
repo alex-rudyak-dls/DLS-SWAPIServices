@@ -32,6 +32,8 @@ OBJC_EXTERN NSString *const DLSApiPracticesRoute;
 OBJC_EXTERN NSString *const DLSApiPracticesInOrganisationRoute;
 OBJC_EXTERN NSString *const DLSApiFeedbackRoute;
 OBJC_EXTERN NSString *const DLSApiContactRoute;
+OBJC_EXTERN NSString *const DLSApiContentTextVersionRoute;
+OBJC_EXTERN NSString *const DLSApiContentTextRoute;
 
 
 #pragma mark - Path ids
