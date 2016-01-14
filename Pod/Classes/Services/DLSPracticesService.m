@@ -144,6 +144,19 @@
     });
 }
 
+- (PMKPromise *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub
+{
+    const DLSPracticesListSort sortAction = DLSPracticesListSortAlphabetically;
+    if (!isOnlyPartOfHub) {
+        return [self fetchPracticesPreviewSorted:sortAction];
+    }
+
+    return [self fetchPracticesPreviewSorted:DLSPracticesListSortAlphabetically].thenOn(self.responseQueue, ^(NSArray<DLSPracticeShortWrapper *> *practices) {
+        return [PMKPromise promiseWithValue:[Underscore array](practices).filter(^ BOOL(DLSPracticeShortWrapper *practice) {
+            return practice.isPartOfHub;
+        }).unwrap];
+    });
+}
 
 #pragma mark - Descriptors
 
