@@ -17,5 +17,6 @@
 @property (nonatomic, readonly) NSString *practiceId;
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) NSURL *imageURL;
+@property (nonatomic, readonly, getter=isPartOfHub) BOOL partOfHub;
 
 @end
