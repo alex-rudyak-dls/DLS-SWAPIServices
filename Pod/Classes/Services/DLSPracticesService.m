@@ -69,8 +69,9 @@
         }
 
         [self updateMediumPaths];
-        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.entityTransport fetchWithId:identifier].thenOn(self.fetchQueue, ^(id response) {
+        id<DLSTransport> const transport = self.entityTransport;
+        [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+        return [transport fetchWithId:identifier].thenOn(self.fetchQueue, ^(id response) {
             DLSPracticeObject *practice = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSPracticeObject objectMapping]];
             NSError *error;
             RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
@@ -114,8 +115,9 @@
         }
 
         [self updateMediumPaths];
-        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.listTransport fetchAllWithParams:nil].thenOn(self.fetchQueue, ^(id response) {
+        id<DLSTransport> const transport = self.listTransport;
+        [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+        return [transport fetchAllWithParams:nil].thenOn(self.fetchQueue, ^(id response) {
             NSArray<DLSPracticeObject *> *practices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSPracticeObject objectMapping]];
             NSError *error;
             RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
@@ -142,6 +144,19 @@
     });
 }
 
+- (PMKPromise *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub
+{
+    const DLSPracticesListSort sortAction = DLSPracticesListSortAlphabetically;
+    if (!isOnlyPartOfHub) {
+        return [self fetchPracticesPreviewSorted:sortAction];
+    }
+
+    return [self fetchPracticesPreviewSorted:DLSPracticesListSortAlphabetically].thenOn(self.responseQueue, ^(NSArray<DLSPracticeShortWrapper *> *practices) {
+        return [PMKPromise promiseWithValue:[Underscore array](practices).filter(^ BOOL(DLSPracticeShortWrapper *practice) {
+            return practice.isPartOfHub;
+        }).unwrap];
+    });
+}
 
 #pragma mark - Descriptors
 

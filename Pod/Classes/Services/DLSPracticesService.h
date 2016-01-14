@@ -19,6 +19,7 @@
 - (PMKPromise *)fetchPracticesSorted:(DLSPracticesListSort)sortKey;
 - (PMKPromise *)fetchAllPracticePreviews;
 - (PMKPromise *)fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey;
+- (PMKPromise *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub;
 
 @end
 
