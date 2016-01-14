@@ -8,7 +8,6 @@
 
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
-#import "DLSAccessTokenObject.h"
 
 
 @interface DLSUserProfileObject : RLMObject <EKMappingProtocol>
