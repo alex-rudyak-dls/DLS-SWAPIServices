@@ -15,6 +15,8 @@
 @property NSData *content;
 @property NSInteger version;
 
+@property (readonly) NSDictionary *contentDictionary;
+
 @end
 
 // This protocol enables typed collections. i.e.:
