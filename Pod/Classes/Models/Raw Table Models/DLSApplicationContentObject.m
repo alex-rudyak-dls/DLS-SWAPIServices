@@ -23,6 +23,11 @@
     return @"version";
 }
 
+- (NSDictionary *)contentDictionary
+{
+    return [NSJSONSerialization JSONObjectWithData:self.content options:NSJSONReadingMutableLeaves error:nil];
+}
+
 // Specify default values for properties
 
 //+ (NSDictionary *)defaultPropertyValues
