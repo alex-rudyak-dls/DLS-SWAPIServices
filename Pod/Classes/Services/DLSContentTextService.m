@@ -40,10 +40,8 @@
     }).thenOn(self.fetchQueue, ^(NSDictionary *response) {
         DLSApplicationContentObject *const contentObject = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSApplicationContentObject objectMapping]];
         return [self.appSettingsService fetchCurrentAppSettings].thenOn(self.fetchQueue, ^(DLSApplicationSettingsWrapper *appSettings) {
-            if (contentObject.version < appSettings.contentVersion) {
-                return [PMKPromise promiseWithValue:@YES];
-            }
-            return [PMKPromise promiseWithValue:@NO];
+            const BOOL hasNewVersion = contentObject.version > appSettings.contentVersion;
+            return [PMKPromise promiseWithValue:@(hasNewVersion)];
         });
     }).catchOn(self.responseQueue, ^(NSError *error) {
         @throw error;
