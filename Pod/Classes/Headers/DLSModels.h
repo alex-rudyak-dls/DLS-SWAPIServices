@@ -17,6 +17,8 @@
 #import "DLSOrganisationWrapper.h"
 #import "DLSTimetableWrapper.h"
 #import "DLSUserProfileWrapper.h"
+#import "DLSPracticeWrapper.h"
+#import "DLSPracticeShortWrapper.h"
 
 #import "DLSAnonymousAppointmentObject.h"
 #import "DLSAppointmentObject.h"
