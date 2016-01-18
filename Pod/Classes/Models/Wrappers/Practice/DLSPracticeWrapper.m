@@ -23,6 +23,7 @@
     self = [self init];
     if (self) {
         _practiceId = object.id;
+        _handleId = object.handleId;
         _name = object.name;
         _address1 = object.address1;
         _address2 = object.address2;

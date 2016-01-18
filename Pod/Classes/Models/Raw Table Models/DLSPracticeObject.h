@@ -14,6 +14,7 @@
 @interface DLSPracticeObject : RLMObject <EKMappingProtocol>
 
 @property NSString *id;
+@property NSString *handleId;
 @property NSString *name;
 @property NSString *address1;
 @property NSString *address2;

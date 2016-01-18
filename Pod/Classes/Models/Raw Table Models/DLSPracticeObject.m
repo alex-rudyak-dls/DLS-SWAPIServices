@@ -16,6 +16,7 @@
     return [EKObjectMapping mappingForClass:self withBlock:^(EKObjectMapping *mapping) {
         [mapping mapPropertiesFromArray:@[@"name", @"address1", @"address2", @"town", @"country", @"postcode", @"website", @"area"]];
         [mapping mapPropertiesFromDictionary:@{
+                                               @"handle": @"handleId",
                                                @"phone": @"telephone",
                                                @"registration_link": @"registrationLink",
                                                @"image_url": @"imageURL",
