@@ -22,6 +22,7 @@
     self = [self init];
     if (self) {
         _practiceId = object.id;
+        _handleId = object.handleId;
         _name = object.name;
         _imageURL = [NSURL URLWithString:object.imageURL];
         _partOfHub = object.partOfHub;

@@ -25,6 +25,7 @@
 @interface DLSPracticeWrapper : NSObject <DLSPracticeWrapper>
 
 @property (nonatomic, readonly) NSString *practiceId;
+@property (nonatomic, readonly) NSString *handleId;
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) NSString *address1;
 @property (nonatomic, readonly) NSString *address2;
