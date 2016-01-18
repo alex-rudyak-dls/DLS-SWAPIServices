@@ -26,6 +26,7 @@
  */
 @property (nonatomic, strong) NSDictionary *mediumPathIdentifiers;
 
+- (void)setupBasicAuthWithUsername:(NSString *)username password:(NSString *)password;
 - (void)updateMediumPathIdentifiers:(NSDictionary *)updatedIdentifiers;
 - (void)appendPathForOneRequest:(NSString *)temporalPath;
 
