@@ -23,5 +23,6 @@
 #import "DLSContactObject.h"
 #import "DLSFeedbackObject.h"
 #import "DLSPracticeObject.h"
+#import "DLSApplicationContentObject.h"
 
 #endif /* DLSModels_h */
