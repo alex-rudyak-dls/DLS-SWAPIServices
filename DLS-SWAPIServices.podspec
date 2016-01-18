@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "DLS-SWAPIServices"
-  s.version          = "0.2.3"
+  s.version          = "0.2.4"
   s.summary          = "Set of classes to provide iOS app access to SW GP Services API"
 
 # This description is used to generate tags and improve search results.
