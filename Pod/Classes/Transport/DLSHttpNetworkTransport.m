@@ -52,6 +52,12 @@ static dispatch_queue_t TransportQueue;
     [[self.sessionManager requestSerializer] setValue:_authorizationHeader forHTTPHeaderField:@"Authorization"];
 }
 
+- (void)setupBasicAuthWithUsername:(NSString *)username password:(NSString *)password
+{
+    NSData *data = [[NSString stringWithFormat:@"%@:%@", username, password] dataUsingEncoding:NSUTF8StringEncoding];
+    [self setAuthorizationHeader:[NSString stringWithFormat:@"Basic %@", [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]]];
+}
+
 - (PMKPromise *)fetchAllWithParams:(NSDictionary *)parameters
 {
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
