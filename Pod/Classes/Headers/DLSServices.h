@@ -13,14 +13,14 @@
 #import "DLSHttpNetworkTransport.h"
 
 #import "DLSServiceConfiguration.h"
-#import "DLSApplicatinSettingsServiceConfiguration.h"
+#import "DLSApplicationSettingsServiceConfiguration.h"
 #import "DLSAuthenticationServiceConfiguration.h"
 #import "DLSEntityServiceConfiguration.h"
 
 #import "DLSEntityService.h"
 #import "DLSEntityAbstractService.h"
 #import "DLSAuthenticationService.h"
-#import "DLSOrganisationService.h"
+#import "DLSOrganisationsService.h"
 #import "DLSCategoriesService.h"
 #import "DLSApplicationSettingsService.h"
 #import "DLSUserProfileService.h"
