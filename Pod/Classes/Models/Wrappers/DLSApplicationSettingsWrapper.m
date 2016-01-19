@@ -38,6 +38,7 @@
     obj.isTermsOfUseAccepted = self.isTermsOfUseAccepted;
     obj.lastStartup = self.lastStartupDate;
     obj.lastUsername = self.lastLoggedInUsername;
+    obj.contentVersion = self.contentVersion;
     return obj;
 }
 
