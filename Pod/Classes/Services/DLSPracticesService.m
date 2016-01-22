@@ -54,37 +54,13 @@
 - (PMKPromise *)fetchById:(id)identifier withWrappersFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
     return [super fetchById:identifier].thenOn(self.fetchQueue, ^() {
-        NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-        if (error) {
-            [self _failWithError:error inMethod:_cmd completion:nil];
-            @throw error;
-        }
-
-        DLSPracticeObject *practice = [DLSPracticeObject objectInRealm:realm forPrimaryKey:identifier];
-        if (practice) {
-            id practiceWrapper = [wrapperFactory practiceWithObject:practice];
-            [self _successWithResponse:practiceWrapper completion:nil];
-            return [PMKPromise promiseWithValue:practiceWrapper];
-        }
-
         [self updateMediumPaths];
         id<DLSTransport> const transport = self.entityTransport;
         [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [transport fetchWithId:identifier].thenOn(self.fetchQueue, ^(id response) {
-            DLSPracticeObject *practice = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSPracticeObject objectMapping]];
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:nil];
-                @throw error;
-            }
-
-            [realm beginWriteTransaction];
-            [realm addOrUpdateObject:practice];
-            [realm commitWriteTransaction];
-            return [PMKPromise promiseWithValue:[wrapperFactory practiceWithObject:practice]];
-        });
+        return [transport fetchWithId:identifier];
+    }).thenOn(self.fetchQueue, ^(id response) {
+        DLSPracticeObject *practice = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSPracticeObject objectMapping]];
+        return [PMKPromise promiseWithValue:[wrapperFactory practiceWithObject:practice]];
     }).thenOn(self.responseQueue, ^(id practice) {
         [self _successWithResponse:practice completion:nil];
         return [PMKPromise promiseWithValue:practice];
@@ -96,46 +72,17 @@
 - (PMKPromise *)fetchPracticesSorted:(DLSPracticesListSort)sortKey withWrapperFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
     return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-        if (error) {
-            [self _failWithError:error inMethod:_cmd completion:nil];
-            @throw error;
-        }
-
-        RLMResults *practices = [DLSPracticeObject allObjectsInRealm:realm];
-        if (practices.count) {
-            practices = [practices sortedResultsUsingDescriptors:@[[self sortDescriptorForKey:sortKey]]];
-            NSMutableArray<DLSPracticeWrapper *> *wrappers = [NSMutableArray arrayWithCapacity:practices.count];
-            for (DLSPracticeObject *practice in practices) {
-                [wrappers addObject:[wrapperFactory practiceWithObject:practice]];
-            }
-            [self _successWithResponse:wrappers completion:nil];
-            return [PMKPromise promiseWithValue:[NSArray arrayWithArray:wrappers]];
-        }
-
         [self updateMediumPaths];
         id<DLSTransport> const transport = self.listTransport;
         [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [transport fetchAllWithParams:nil].thenOn(self.fetchQueue, ^(id response) {
-            NSArray<DLSPracticeObject *> *practices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSPracticeObject objectMapping]];
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:nil];
-                @throw error;
-            }
-
-            [realm beginWriteTransaction];
-            [realm addOrUpdateObjectsFromArray:practices];
-            [realm commitWriteTransaction];
-
-            practices = [practices sortedArrayUsingDescriptors:@[[self nssortDescriptorForKey:sortKey]]];
-            NSArray<DLSPracticeWrapper *> *wrappers = [Underscore array](practices).map(^(DLSPracticeObject *practice) {
-                return [wrapperFactory practiceWithObject:practice];
-            }).unwrap;
-            return [PMKPromise promiseWithValue:wrappers];
-        });
+        return [transport fetchAllWithParams:nil];
+    }).thenOn(self.fetchQueue, ^(id response) {
+        NSArray<DLSPracticeObject *> *practices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSPracticeObject objectMapping]];
+        practices = [practices sortedArrayUsingDescriptors:@[[self nssortDescriptorForKey:sortKey]]];
+        NSArray<DLSPracticeWrapper *> *wrappers = [Underscore array](practices).map(^(DLSPracticeObject *practice) {
+            return [wrapperFactory practiceWithObject:practice];
+        }).unwrap;
+        return [PMKPromise promiseWithValue:wrappers];
     }).thenOn(self.responseQueue, ^(NSArray *practices) {
         [self _successWithResponse:practices completion:nil];
         return [PMKPromise promiseWithValue:practices];
