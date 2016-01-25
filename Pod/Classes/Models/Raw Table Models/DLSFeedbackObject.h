@@ -14,7 +14,7 @@
 
 @property NSString *organisationId;
 @property NSString *feedbackOnService;
-@property NSString *recommendationLikelihood;
+@property NSNumber<RLMInt> *recommendationLikelihood;
 @property NSString *howYouFeel;
 @property NSString *tellUsMore;
 @property NSNumber<RLMBool> *havePermissionToPublish;
