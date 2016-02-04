@@ -67,7 +67,7 @@
                                                     @"cat_id": self.categoryId,
                                                     @"minor_ailments": @((BOOL)(filterKey & DLSServiceDirectoryFiltrationMinorAilment)),
                                                     @"lat": @(location.latitude),
-                                                    @"long": @(location.longitude)
+                                                    @"lng": @(location.longitude)
                                                     }];
 
     }).thenOn(self.fetchQueue, ^(NSArray *response) {
