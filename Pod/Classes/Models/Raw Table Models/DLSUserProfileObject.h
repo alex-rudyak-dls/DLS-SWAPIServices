@@ -16,6 +16,7 @@
 @property NSString *lastName;
 @property NSString *email;
 @property NSString *phone;
+@property NSString *skype;
 @property NSString *gender;
 @property NSString *gp;
 @property NSString *sub;
