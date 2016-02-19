@@ -21,6 +21,7 @@
                                                @"sub": @"sub",
                                                @"email": @"email",
                                                @"phone": @"phone",
+                                               @"skype": @"skype",
                                                @"gender": @"gender",
                                                @"gp": @"gp"
                                                }];

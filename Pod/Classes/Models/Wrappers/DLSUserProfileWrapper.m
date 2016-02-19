@@ -26,6 +26,7 @@
         self.lastName = object.lastName;
         self.email = object.email;
         self.phone = object.phone;
+        self.skype = object.skype;
         self.gender = object.gender;
         self.gp = object.gp;
         self.sub = object.sub;
@@ -41,6 +42,7 @@
     object.lastName = self.lastName;
     object.email = self.lastName;
     object.phone = self.phone;
+    object.skype = self.skype;
     object.gender = self.gender;
     object.gp = self.gp;
     object.sub = self.sub;
