@@ -10,11 +10,12 @@
 #import "DLSTransport.h"
 #import <AFNetworking/AFNetworking.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSHttpNetworkTransport : NSObject <DLSTransport>
 
-@property (nonatomic, strong) NSString *authorizationHeader;
-@property (nonatomic, strong) NSDictionary *mediumPathIdentifiers;
+@property (nullable, nonatomic, strong) NSString *authorizationHeader;
+@property (nullable, nonatomic, strong) NSDictionary *mediumPathIdentifiers;
 
 @property (nonatomic, readonly) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, readonly) NSString *pathFormat;
@@ -40,3 +41,5 @@
 - (instancetype)initWithManager:(AFHTTPSessionManager *)sessionManager pathFormat:(NSString *)pathFormat NS_DESIGNATED_INITIALIZER;
 
 @end
+
+NS_ASSUME_NONNULL_END

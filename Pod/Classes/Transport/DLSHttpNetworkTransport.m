@@ -8,18 +8,26 @@
 
 #import "DLSHttpNetworkTransport.h"
 #import <PromiseKit/PromiseKit.h>
+#import <Bolts/Bolts.h>
 #import "DLSPrivateHeader.h"
 #import <ITDispatchManagement/ITDispatchManagement.h>
 #import "NSString+DLSEntityParsing.h"
 #import "DLSApiErrors.h"
 #import "DLSApiConstants.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+@interface DLSHttpNetworkTransport ()
+
+@property (nonatomic, strong) dispatch_queue_t queue;
+@property (nonatomic, strong) NSOperationQueue *transportQueue;
+@property (nonatomic, strong) BFExecutor *taskExecutor;
+
+@end
 
 @implementation DLSHttpNetworkTransport {
     NSString *_appendedPath;
 }
-
-static dispatch_queue_t TransportQueue;
 
 - (instancetype)initWithManager:(AFHTTPSessionManager *)sessionManager pathFormat:(NSString *)pathFormat
 {
@@ -31,12 +39,19 @@ static dispatch_queue_t TransportQueue;
         _repeatTimeout = 10;
         _repeatCount = 1;
 
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            TransportQueue = dispatch_queue_create("uk.co.digitallifesciences.DLSHttpTransportQueue", DISPATCH_QUEUE_CONCURRENT);
-        });
+        _transportQueue = [[NSOperationQueue alloc] init];
+        _transportQueue.maxConcurrentOperationCount = 3;
+        _transportQueue.name = @"uk.co.digitallifesciences.DLSHttpTransportQueue";
+        _transportQueue.qualityOfService = NSQualityOfServiceUserInitiated;
+        _queue = dispatch_queue_create("uk.co.digitallifesciences.DLSHttpTransportQueue_underlying", DISPATCH_QUEUE_CONCURRENT);
+        _transportQueue.underlyingQueue = _queue;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self.transportQueue cancelAllOperations];
 }
 
 - (instancetype)init
@@ -45,7 +60,9 @@ static dispatch_queue_t TransportQueue;
     return self;
 }
 
-- (void)setAuthorizationHeader:(NSString *)authorizationHeader
+#pragma mark - Accessors
+
+- (void)setAuthorizationHeader:(nullable NSString *)authorizationHeader
 {
     _authorizationHeader = authorizationHeader;
 
@@ -58,20 +75,60 @@ static dispatch_queue_t TransportQueue;
     [self setAuthorizationHeader:[NSString stringWithFormat:@"Basic %@", [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]]];
 }
 
+#pragma mark - Requests
+
+- (BFTask *)bft_fetchAllWithParams:(nullable NSDictionary<NSString *,id> *)parameters
+{
+    BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    NSString *const urlPath = [self urlPath];
+    [self.transportQueue addOperationWithBlock:^{
+        NSURLSessionTask *const dataTask = [self.sessionManager GET:urlPath parameters:parameters success:^(NSURLSessionDataTask *task, id responseObject) {
+            DDLogVerbose(@"[HTTP:Transport:GET]: Success. %@(`%@`) - %@ ||| `%@`", urlPath, parameters, task.response, responseObject);
+            [taskSource trySetResult:responseObject];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogDebug(@"[HTTP:Transport:GET]: Error. %@(`%@`) - %@", urlPath, parameters, [error localizedDescription]);
+            [taskSource trySetError:error];
+        }];
+
+        if (taskSource.task.isCancelled) {
+            [dataTask cancel];
+        }
+    }];
+    return taskSource.task;
+}
+
 - (PMKPromise *)fetchAllWithParams:(NSDictionary *)parameters
 {
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(TransportQueue, ^{
-            NSString *const urlPath = [self urlPath];
-            [self.sessionManager GET:urlPath parameters:parameters success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogVerbose(@"[HTTP:Transport:GET]: Success. %@(`%@`) - %@ ||| `%@`", urlPath, parameters, task.response, responseObject);
-                resolve(responseObject);
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogDebug(@"[HTTP:Transport:GET]: Error. %@(`%@`) - %@", urlPath, parameters, [error localizedDescription]);
-                resolve(error);
-            }];
-        });
+        [[self bft_fetchAllWithParams:parameters] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            if (task.result) {
+                resolve(task.result);
+            } else {
+                resolve(task.error);
+            }
+            return nil;
+        }];
     }];
+}
+
+- (BFTask *)bft_fetchWithId:(id)entityIdentifier
+{
+    BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    NSString *const urlPath = [NSString stringWithFormat:@"%@/%@", [self urlPath], entityIdentifier];
+    [self.transportQueue addOperationWithBlock:^{
+        NSURLSessionTask *const dataTask = [self.sessionManager GET:urlPath parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+            DDLogVerbose(@"[HTTP:Transport:GET]: Success. %@(`{id: %@}`) - %@ ||| `%@`", urlPath, entityIdentifier, task.response, responseObject);
+            [taskSource trySetResult:responseObject];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogDebug(@"[HTTP:Transport:GET]: Error. %@(`{id: %@}`) - %@", urlPath, entityIdentifier, [error localizedDescription]);
+            [taskSource trySetError:error];
+        }];
+
+        if (taskSource.task.isCancelled) {
+            [dataTask cancel];
+        }
+    }];
+    return taskSource.task;
 }
 
 - (PMKPromise *)fetchWithId:(id)entityIdentifier
@@ -79,98 +136,152 @@ static dispatch_queue_t TransportQueue;
     NSParameterAssert(entityIdentifier);
 
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(TransportQueue, ^{
-            //todo: fix for formatted urlPath
-            NSString *const urlPath = [NSString stringWithFormat:@"%@/%@", [self urlPath], entityIdentifier];
-            [self.sessionManager GET:urlPath parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogVerbose(@"[HTTP:Transport:GET]: Success. %@(`{id: %@}`) - %@ ||| `%@`", urlPath, entityIdentifier, task.response, responseObject);
-                resolve(responseObject);
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogDebug(@"[HTTP:Transport:GET]: Error. %@(`{id: %@}`) - %@", urlPath, entityIdentifier, [error localizedDescription]);
-                resolve(error);
-            }];
-        });
+        [[self bft_fetchWithId:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            if (task.result) {
+                resolve(task.result);
+            } else {
+                resolve(task.error);
+            }
+            return nil;
+        }];
     }];
+}
+
+- (BFTask *)bft_create:(NSDictionary *)entity
+{
+    NSParameterAssert(entity);
+
+    BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    NSString *const urlPath = [self urlPath];
+    [self.transportQueue addOperationWithBlock:^{
+        NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
+        mutableEntity[@"request_source"] = DLSApiRequestSource;
+        [self.sessionManager POST:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
+            DDLogVerbose(@"[HTTP:Transport:CREATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
+            [taskSource trySetResult:responseObject];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            DDLogDebug(@"[HTTP:Transport:CREATE]: Error. %@(`{%@}`) - %@", urlPath, entity, [error localizedDescription]);
+            [taskSource trySetError:error];
+        }];
+    }];
+    return taskSource.task;
+
 }
 
 - (PMKPromise *)create:(NSDictionary *)entity
 {
-    NSParameterAssert(entity);
-
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(TransportQueue, ^{
-            NSString *const urlPath = [self urlPath];
-            NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
-            mutableEntity[@"request_source"] = DLSApiRequestSource;
-            [self.sessionManager POST:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogVerbose(@"[HTTP:Transport:CREATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
-                resolve(responseObject);
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                DDLogDebug(@"[HTTP:Transport:CREATE]: Error. %@(`{%@}`) - %@", urlPath, entity, [error localizedDescription]);
-                resolve(error);
-            }];
-        });
+        [[self bft_create:entity] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            if (task.result) {
+                resolve(task.result);
+            } else {
+                resolve(task.error);
+            }
+            return nil;
+        }];
     }];
+}
+
+- (BFTask *)bft_update:(NSDictionary *)entity id:(id)entityIdentifier
+{
+    NSParameterAssert(entity);
+    NSParameterAssert(entityIdentifier);
+
+    BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
+    [self.transportQueue addOperationWithBlock:^{
+        NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
+        mutableEntity[@"request_source"] = DLSApiRequestSource;
+        [self.sessionManager PUT:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
+            DDLogVerbose(@"[HTTP:Transport:UPDATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
+            [taskSource trySetResult:responseObject];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogDebug(@"[HTTP:Transport:UPDATE]: Error. %@(`{%@}`) - %@", urlPath, entity, [error localizedDescription]);
+            [taskSource trySetError:error];
+        }];
+    }];
+    return taskSource.task;
 }
 
 - (PMKPromise *)update:(NSDictionary *)entity id:(id)entityIdentifier
 {
+    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
+        [[self bft_update:entity id:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            if (task.result) {
+                resolve(task.result);
+            } else {
+                resolve(task.error);
+            }
+            return nil;
+        }];
+    }];
+}
+
+- (BFTask *)bft_patch:(NSDictionary *)entity id:(id)entityIdentifier
+{
     NSParameterAssert(entity);
     NSParameterAssert(entityIdentifier);
 
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(TransportQueue, ^{
-            //todo: fix for formatted urlPath
-            NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
-            NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
-            mutableEntity[@"request_source"] = DLSApiRequestSource;
-            [self.sessionManager PUT:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogVerbose(@"[HTTP:Transport:UPDATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
-                resolve(responseObject);
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogDebug(@"[HTTP:Transport:UPDATE]: Error. %@(`{%@}`) - %@", urlPath, entity, [error localizedDescription]);
-                resolve(error);
-            }];
-        });
+    BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    //todo: fix for formatted urlPath
+    NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
+    [self.transportQueue addOperationWithBlock:^{
+        NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
+        mutableEntity[@"request_source"] = DLSApiRequestSource;
+        [self.sessionManager PATCH:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
+            DDLogVerbose(@"[HTTP:Transport:PATCH]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
+            [taskSource trySetResult:responseObject];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogDebug(@"[HTTP:Transport:PATCH]: Error. %@(`{%@}`) - %@", urlPath, entity, [error localizedDescription]);
+            [taskSource trySetError:error];
+        }];
     }];
+    return taskSource.task;
 }
 
 - (PMKPromise *)patch:(NSDictionary *)entity id:(id)entityIdentifier
 {
-    NSParameterAssert(entity);
-    NSParameterAssert(entityIdentifier);
 
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(TransportQueue, ^{
-            //todo: fix for formatted urlPath
-            NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
-            NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
-            mutableEntity[@"request_source"] = DLSApiRequestSource;
-            [self.sessionManager PATCH:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogVerbose(@"[HTTP:Transport:PATCH]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
-                resolve(responseObject);
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogDebug(@"[HTTP:Transport:PATCH]: Error. %@(`{%@}`) - %@", urlPath, entity, [error localizedDescription]);
-                resolve(error);
-            }];
-        });
+        [[self bft_patch:entity id:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            if (task.result) {
+                resolve(task.result);
+            } else {
+                resolve(task.error);
+            }
+            return nil;
+        }];
     }];
+}
+
+- (BFTask *)bft_removeWithId:(id)entityIdentifier
+{
+    NSParameterAssert(entityIdentifier);
+    NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
+    BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    [self.transportQueue addOperationWithBlock:^{
+        [self.sessionManager DELETE:urlPath parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+            DDLogVerbose(@"[HTTP:Transport:DELETE]: Success. %@(`{id: %@}`) - %@ ||| `%@`", urlPath, entityIdentifier, task.response, responseObject);
+            [taskSource trySetResult:responseObject];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            DDLogDebug(@"[HTTP:Transport:DELETE]: Error. %@(`{id: %@}`) - %@", urlPath, entityIdentifier, [error localizedDescription]);
+            [taskSource trySetError:error];
+        }];
+    }];
+    return taskSource.task;
 }
 
 - (PMKPromise *)removeWithId:(id)entityIdentifier
 {
-    NSParameterAssert(entityIdentifier);
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(TransportQueue, ^{
-            NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
-            [self.sessionManager DELETE:urlPath parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogVerbose(@"[HTTP:Transport:DELETE]: Success. %@(`{id: %@}`) - %@ ||| `%@`", urlPath, entityIdentifier, task.response, responseObject);
-                resolve(responseObject);
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogDebug(@"[HTTP:Transport:DELETE]: Error. %@(`{id: %@}`) - %@", urlPath, entityIdentifier, [error localizedDescription]);
-                resolve(error);
-            }];
-        });
+        [[self bft_removeWithId:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
+            if (task.result) {
+                resolve(task.result);
+            } else {
+                resolve(task.error);
+            }
+            return nil;
+        }];
     }];
 }
 
@@ -216,3 +327,5 @@ static dispatch_queue_t TransportQueue;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

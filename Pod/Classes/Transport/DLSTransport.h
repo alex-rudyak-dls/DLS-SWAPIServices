@@ -8,9 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class PMKPromise;
+NS_ASSUME_NONNULL_BEGIN
 
-@protocol DLSTransport <NSObject>
+@class PMKPromise;
+@class BFTask;
+
+@protocol DLSTransport
 
 @required
 
@@ -37,4 +40,15 @@
 - (PMKPromise *)patch:(NSDictionary *)entity id:(id)entityIdentifier;
 - (PMKPromise *)removeWithId:(id)entityIdentifier;
 
+- (BFTask *)bft_fetchAllWithParams:(nullable NSDictionary<NSString *, id> *)parameters;
+- (BFTask *)bft_fetchWithId:(id)entityIdentifier;
+- (BFTask *)bft_create:(NSDictionary *)entity;
+- (BFTask *)bft_update:(NSDictionary *)entity id:(id)entityIdentifier;
+- (BFTask *)bft_patch:(NSDictionary *)entity id:(id)entityIdentifier;
+- (BFTask *)bft_removeWithId:(id)entityIdentifier;
+
+
+
 @end
+
+NS_ASSUME_NONNULL_END
