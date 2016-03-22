@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class DLSOrganisationObject;
+NS_ASSUME_NONNULL_BEGIN
 
+@class DLSOrganisationObject;
 
 @interface DLSOrganisationWrapper : NSObject
 
@@ -21,3 +22,5 @@
 + (instancetype)organisationWithObject:(DLSOrganisationObject *)object;
 
 @end
+
+NS_ASSUME_NONNULL_END

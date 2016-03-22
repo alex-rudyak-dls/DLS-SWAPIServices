@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class DLSCategoryObject;
+NS_ASSUME_NONNULL_BEGIN
 
+@class DLSCategoryObject;
 
 @interface DLSCategoryWrapper : NSObject
 
@@ -17,10 +18,12 @@
 @property (nonatomic, strong) NSString *organisationId;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *slug;
-@property (nonatomic, strong) NSString *desc;
+@property (nullable, nonatomic, strong) NSString *desc;
 
 - (instancetype)initWithCategory:(DLSCategoryObject *)object;
 
 + (instancetype)categoryWithObject:(DLSCategoryObject *)object;
 
 @end
+
+NS_ASSUME_NONNULL_END

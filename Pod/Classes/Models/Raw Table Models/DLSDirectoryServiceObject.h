@@ -10,6 +10,7 @@
 #import <EasyMapping/EasyMapping.h>
 #import "DLSTimetableObject.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSLocationObject : RLMObject <EKMappingProtocol>
 
@@ -27,14 +28,14 @@ RLM_ARRAY_TYPE(DLSLocationObject);
 @property NSString *organisationId;
 @property NSString *categoryId;
 @property NSString *name;
-@property NSString *address1;
-@property NSString *address2;
-@property NSString *town;
-@property NSString *country;
-@property NSString *postcode;
+@property (nullable) NSString *address1;
+@property (nullable) NSString *address2;
+@property (nullable) NSString *town;
+@property (nullable) NSString *country;
+@property (nullable) NSString *postcode;
 @property DLSLocationObject *location;
-@property NSString *website;
-@property NSString *telephone;
+@property (nullable) NSString *website;
+@property (nullable) NSString *telephone;
 @property RLMArray<DLSTimetableObject *><DLSTimetableObject> *openingTimes;
 @property float distance;
 
@@ -44,6 +45,6 @@ RLM_ARRAY_TYPE(DLSLocationObject);
 
 @end
 
-// This protocol enables typed collections. i.e.:
-// RLMArray<DLSDirectoryServiceObject>
 RLM_ARRAY_TYPE(DLSDirectoryServiceObject);
+
+NS_ASSUME_NONNULL_END

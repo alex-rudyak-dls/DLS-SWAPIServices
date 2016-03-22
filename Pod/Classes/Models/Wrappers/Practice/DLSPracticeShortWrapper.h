@@ -9,15 +9,18 @@
 #import <Foundation/Foundation.h>
 #import "DLSPracticeWrapper.h"
 
-@class DLSPracticeObject;
+NS_ASSUME_NONNULL_BEGIN
 
+@class DLSPracticeObject;
 
 @interface DLSPracticeShortWrapper : NSObject <DLSPracticeWrapper>
 
 @property (nonatomic, readonly) NSString *practiceId;
 @property (nonatomic, readonly) NSString *handleId;
 @property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) NSURL *imageURL;
+@property (nullable, nonatomic, readonly) NSURL *imageURL;
 @property (nonatomic, readonly, getter=isPartOfHub) BOOL partOfHub;
 
 @end
+
+NS_ASSUME_NONNULL_END

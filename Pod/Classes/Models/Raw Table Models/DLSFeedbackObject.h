@@ -9,6 +9,7 @@
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSFeedbackObject : RLMObject <EKMappingProtocol>
 
@@ -16,12 +17,12 @@
 @property NSString *feedbackOnService;
 @property NSNumber<RLMInt> *recommendationLikelihood;
 @property NSString *howYouFeel;
-@property NSString *tellUsMore;
+@property (nullable) NSString *tellUsMore;
 @property NSNumber<RLMBool> *havePermissionToPublish;
 @property NSString *practiceOrOrganisation;
 
 @end
 
-// This protocol enables typed collections. i.e.:
-// RLMArray<DLSFeedbackObject>
 RLM_ARRAY_TYPE(DLSFeedbackObject);
+
+NS_ASSUME_NONNULL_END

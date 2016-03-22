@@ -9,14 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "DLSApplicationSettingsObject.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSApplicationSettingsWrapper : NSObject
 
 @property (nonatomic, readonly) NSString *appName;
 
-@property (nonatomic, strong) NSString *lastLoggedInUsername;
+@property (nullable, nonatomic, strong) NSString *lastLoggedInUsername;
 
-@property (nonatomic, strong) NSDate *lastStartupDate;
+@property (nullable, nonatomic, strong) NSDate *lastStartupDate;
 
 @property (nonatomic, assign) NSInteger contentVersion;
 
@@ -29,3 +30,5 @@
 - (DLSApplicationSettingsObject *)appObject;
 
 @end
+
+NS_ASSUME_NONNULL_END

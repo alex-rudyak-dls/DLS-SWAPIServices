@@ -8,6 +8,8 @@
 
 #import "DLSApiConstants.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const DLSApiRedirectUrlString = @"southworcestershiregp://";
 NSString *const DLSApiRequestSource = @"iOS";
 
@@ -34,3 +36,5 @@ NSString *const DLSApiContentTextRoute = @"/apps/ios.json";
 #pragma mark -
 
 NSString *const DLSPathOrganisationEntityId = @"ORG_ID";
+
+NS_ASSUME_NONNULL_END

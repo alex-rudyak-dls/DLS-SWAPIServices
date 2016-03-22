@@ -8,6 +8,7 @@
 
 #import <Realm/Realm.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSApplicationSettingsObject : RLMObject
 
@@ -15,14 +16,14 @@
 
 @property BOOL isTermsOfUseAccepted;
 
-@property NSString *lastUsername;
+@property (nullable) NSString *lastUsername;
 
-@property NSDate *lastStartup;
+@property (nullable) NSDate *lastStartup;
 
 @property NSInteger contentVersion;
 
 @end
 
-// This protocol enables typed collections. i.e.:
-// RLMArray<DLSApplicationSettingsObject>
 RLM_ARRAY_TYPE(DLSApplicationSettingsObject);
+
+NS_ASSUME_NONNULL_END

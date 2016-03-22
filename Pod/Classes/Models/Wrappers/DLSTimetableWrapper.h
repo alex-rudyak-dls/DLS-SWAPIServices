@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class DLSDayTime;
 @class DLSTimetableObject;
-
 
 @interface DLSDayTimeWrapper : NSObject
 
@@ -39,6 +40,8 @@
 
 @interface DLSTimetableWrapper (DLSStringDescriptions)
 
-- (NSString *)shortTimetable;
+- (nullable NSString *)shortTimetable;
 
 @end
+
+NS_ASSUME_NONNULL_END

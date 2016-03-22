@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class DLSPracticeObject;
 @class DLSTimetableWrapper;
 
@@ -27,26 +29,28 @@
 @property (nonatomic, readonly) NSString *practiceId;
 @property (nonatomic, readonly) NSString *handleId;
 @property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) NSString *address1;
-@property (nonatomic, readonly) NSString *address2;
-@property (nonatomic, readonly) NSString *town;
-@property (nonatomic, readonly) NSString *country;
+@property (nullable, nonatomic, readonly) NSString *address1;
+@property (nullable, nonatomic, readonly) NSString *address2;
+@property (nullable, nonatomic, readonly) NSString *town;
+@property (nullable, nonatomic, readonly) NSString *country;
 @property (nonatomic, readonly) NSString *postcode;
-@property (nonatomic, readonly) NSString *area;
-@property (nonatomic, readonly) NSURL *websiteURL;
-@property (nonatomic, readonly) NSURL *registrationURL;
-@property (nonatomic, readonly) NSURL *imageURL;
-@property (nonatomic, readonly) NSString *telephone;
-@property (nonatomic, readonly) NSString *openingTimes;
+@property (nullable, nonatomic, readonly) NSString *area;
+@property (nullable, nonatomic, readonly) NSURL *websiteURL;
+@property (nullable, nonatomic, readonly) NSURL *registrationURL;
+@property (nullable, nonatomic, readonly) NSURL *imageURL;
+@property (nullable, nonatomic, readonly) NSString *telephone;
+@property (nullable, nonatomic, readonly) NSString *openingTimes;
 @property (nonatomic, readonly, getter=isPartOfHub) BOOL partOfHub;
 
-@property (nonatomic, readonly) NSString *fullAddress;
+@property (nullable, nonatomic, readonly) NSString *fullAddress;
 
 @end
 
 
 @interface DLSPracticeWrapper (DLSDescriptions)
 
-- (NSString *)openingTimesDescription;
+- (nullable NSString *)openingTimesDescription;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -9,6 +9,7 @@
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSDayTime : RLMObject <EKMappingProtocol>
 
@@ -35,3 +36,5 @@ RLM_ARRAY_TYPE(DLSDayTime);
 @end
 
 RLM_ARRAY_TYPE(DLSTimetableObject);
+
+NS_ASSUME_NONNULL_END

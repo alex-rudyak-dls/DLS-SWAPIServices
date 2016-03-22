@@ -8,6 +8,8 @@
 
 #import "DLSAppPaths.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *DLSUserDirectory()
 {
     return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
@@ -17,3 +19,5 @@ NSString *DLSUserDirectoryWithFilename(NSString *filename)
 {
     return [DLSUserDirectory() stringByAppendingPathComponent:filename];
 }
+
+NS_ASSUME_NONNULL_END

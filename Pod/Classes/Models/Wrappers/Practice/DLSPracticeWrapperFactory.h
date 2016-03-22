@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class DLSPracticeObject;
 @protocol DLSPracticeWrapper;
 
@@ -26,3 +28,5 @@
 @interface DLSPracticeShortWrapperAbstractFactory : NSObject <DLSPracticeWrapperFactory>
 
 @end
+
+NS_ASSUME_NONNULL_END

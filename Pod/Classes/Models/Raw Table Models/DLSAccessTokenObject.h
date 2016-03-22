@@ -9,14 +9,15 @@
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
 
-@class DLSUserProfileObject;
+NS_ASSUME_NONNULL_BEGIN
 
+@class DLSUserProfileObject;
 
 @interface DLSAccessTokenObject : RLMObject <EKMappingProtocol>
 
 @property NSString *accessToken;
 @property NSString *tokenType;
-@property NSString *idToken;
+@property (nullable) NSString *idToken;
 @property NSDate *expirationDate;
 @property NSString *refreshToken;
 @property NSString *scope;
@@ -24,3 +25,5 @@
 @end
 
 RLM_ARRAY_TYPE(DLSAccessTokenObject);
+
+NS_ASSUME_NONNULL_END

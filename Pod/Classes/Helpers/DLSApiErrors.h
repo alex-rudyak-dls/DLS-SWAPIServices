@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 OBJC_EXTERN NSString *const DLSSouthWorcestershireErrorDomain;
 
 typedef NS_ENUM(NSUInteger, DLSSouthWorcestershireErrorCode) {
@@ -18,8 +20,10 @@ typedef NS_ENUM(NSUInteger, DLSSouthWorcestershireErrorCode) {
 
 @interface NSError (DLSApiErrors)
 
-+ (instancetype)errorWithDomainPostfix:(NSString *)postfix code:(DLSSouthWorcestershireErrorCode)code userInfo:(NSDictionary *)dict;
++ (instancetype)errorWithDomainPostfix:(NSString *)postfix code:(DLSSouthWorcestershireErrorCode)code userInfo:(nullable NSDictionary<NSString *, id> *)dict;
 
-+ (instancetype)errorUnauthorizedAccessWithInfo:(NSDictionary *)dict;
++ (instancetype)errorUnauthorizedAccessWithInfo:(NSDictionary<NSString *, id> *)dict;
 
 @end
+
+NS_ASSUME_NONNULL_END

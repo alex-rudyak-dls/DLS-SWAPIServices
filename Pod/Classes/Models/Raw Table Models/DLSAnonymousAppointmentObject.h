@@ -8,6 +8,7 @@
 
 #import "DLSAppointmentObject.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSAnonymousAppointmentObject : DLSAppointmentObject <EKMappingProtocol>
 
@@ -19,3 +20,5 @@
 @property NSString *email;
 
 @end
+
+NS_ASSUME_NONNULL_END

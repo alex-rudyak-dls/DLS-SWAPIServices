@@ -9,13 +9,14 @@
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSAppointmentObject : RLMObject <EKMappingProtocol>
 
 @property NSString *id;
 @property NSString *organisationId;
-@property NSString *telephone;
-@property NSString *skype;
+@property (nullable) NSString *telephone;
+@property (nullable) NSString *skype;
 @property NSString *reason;
 @property NSString *status;
 @property NSNumber<RLMBool> *isPreferNotToSay;
@@ -25,6 +26,6 @@
 
 @end
 
-// This protocol enables typed collections. i.e.:
-// RLMArray<DLSAppointmentRequestObject>
 RLM_ARRAY_TYPE(DLSAppointmentRequestObject);
+
+NS_ASSUME_NONNULL_END

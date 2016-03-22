@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class DLSUserProfileObject;
+NS_ASSUME_NONNULL_BEGIN
 
+@class DLSUserProfileObject;
 
 @interface DLSUserProfileWrapper : NSObject
 
@@ -17,9 +18,9 @@
 @property (nonatomic, strong) NSString *lastName;
 @property (nonatomic, strong) NSString *email;
 @property (nonatomic, strong) NSString *phone;
-@property (nonatomic, strong) NSString *skype;
+@property (nullable, nonatomic, strong) NSString *skype;
 @property (nonatomic, strong) NSString *gender;
-@property (nonatomic, strong) NSString *gp;
+@property (nullable, nonatomic, strong) NSString *gp;
 @property (nonatomic, strong) NSString *sub;
 @property (nonatomic, strong) NSDate *dateOfBirth;
 
@@ -32,3 +33,5 @@
 - (DLSUserProfileObject *)userProfileObject;
 
 @end
+
+NS_ASSUME_NONNULL_END

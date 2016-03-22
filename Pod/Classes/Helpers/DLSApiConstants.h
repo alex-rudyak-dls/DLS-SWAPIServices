@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 OBJC_EXTERN NSString *const DLSApiRedirectUrlString;
 OBJC_EXTERN NSString *const DLSApiRequestSource;
 
@@ -39,3 +41,5 @@ OBJC_EXTERN NSString *const DLSApiContentTextRoute;
 #pragma mark - Path ids
 
 OBJC_EXTERN NSString *const DLSPathOrganisationEntityId;
+
+NS_ASSUME_NONNULL_END

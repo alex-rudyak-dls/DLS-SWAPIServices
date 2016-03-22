@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class DLSLocationObject;
-
 @class CLLocation;
-
 
 @interface DLSLocationWrapper : NSObject
 
@@ -30,3 +30,5 @@
 - (instancetype)initWithCoreLocation:(CLLocation *)location;
 
 @end
+
+NS_ASSUME_NONNULL_END

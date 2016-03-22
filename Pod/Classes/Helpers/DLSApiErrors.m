@@ -8,12 +8,14 @@
 
 #import "DLSApiErrors.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const DLSSouthWorcestershireErrorDomain = @"uk.co.south-worcestershire-api";
 
 
 @implementation NSError (DLSApiErrors)
 
-+ (instancetype)errorWithDomainPostfix:(NSString *)postfix code:(DLSSouthWorcestershireErrorCode)code userInfo:(NSDictionary *)dict
++ (instancetype)errorWithDomainPostfix:(NSString *)postfix code:(DLSSouthWorcestershireErrorCode)code userInfo:(nullable NSDictionary<NSString *,id> *)dict
 {
     NSString *domain;
     if ([postfix length] > 0) {
@@ -31,3 +33,5 @@ NSString *const DLSSouthWorcestershireErrorDomain = @"uk.co.south-worcestershire
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

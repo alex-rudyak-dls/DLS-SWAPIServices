@@ -8,7 +8,6 @@
 
 #import "DLSAccessTokenObject.h"
 
-
 @implementation DLSAccessTokenObject
 
 + (EKObjectMapping *)objectMapping

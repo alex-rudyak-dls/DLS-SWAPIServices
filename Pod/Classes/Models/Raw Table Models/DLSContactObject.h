@@ -9,6 +9,7 @@
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSContactObject : RLMObject <EKMappingProtocol>
 
@@ -16,10 +17,10 @@
 @property NSString *patientName;
 @property NSString *email;
 @property NSString *contactNumber;
-@property NSString *message;
+@property (nullable) NSString *message;
 
 @end
 
-// This protocol enables typed collections. i.e.:
-// RLMArray<DLSContactObject>
 RLM_ARRAY_TYPE(DLSContactObject);
+
+NS_ASSUME_NONNULL_END

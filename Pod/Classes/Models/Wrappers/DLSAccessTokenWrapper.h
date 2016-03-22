@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "DLSAccessTokenObject.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSAccessTokenWrapper : NSObject
 
@@ -28,3 +29,5 @@
 - (NSString *)authenticationHeaderValue;
 
 @end
+
+NS_ASSUME_NONNULL_END

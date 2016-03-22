@@ -8,9 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface NSDateFormatter (DLSApiDates)
 
 + (NSDateFormatter *)dls_shortDateFormatter;
 
 @end
+
+NS_ASSUME_NONNULL_END

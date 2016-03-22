@@ -9,6 +9,7 @@
 #import <Realm/Realm.h>
 #import <EasyMapping/EasyMapping.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSOrganisationObject : RLMObject <EKMappingProtocol>
 
@@ -17,6 +18,6 @@
 
 @end
 
-// This protocol enables typed collections. i.e.:
-// RLMArray<DLSOrganisationObject>
 RLM_ARRAY_TYPE(DLSOrganisationObject);
+
+NS_ASSUME_NONNULL_END

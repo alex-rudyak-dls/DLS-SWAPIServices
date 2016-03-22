@@ -9,9 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "DLSLocationWrapper.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class DLSDirectoryServiceObject;
 @class DLSTimetableWrapper;
-
 
 @interface DLSDirectoryServiceWrapper : NSObject
 
@@ -19,20 +20,20 @@
 @property (nonatomic, readonly) NSString *organisationId;
 @property (nonatomic, readonly) NSString *categoryId;
 @property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) NSString *address1;
-@property (nonatomic, readonly) NSString *address2;
-@property (nonatomic, readonly) NSString *town;
-@property (nonatomic, readonly) NSString *country;
+@property (nullable, nonatomic, readonly) NSString *address1;
+@property (nullable, nonatomic, readonly) NSString *address2;
+@property (nullable, nonatomic, readonly) NSString *town;
+@property (nullable, nonatomic, readonly) NSString *country;
 @property (nonatomic, readonly) NSString *postcode;
 @property (nonatomic, readonly) DLSLocationWrapper *location;
-@property (nonatomic, readonly) NSURL *websiteURL;
-@property (nonatomic, readonly) NSString *telephone;
+@property (nullable, nonatomic, readonly) NSURL *websiteURL;
+@property (nullable, nonatomic, readonly) NSString *telephone;
 @property (nonatomic, readonly) NSArray<DLSTimetableWrapper *> *openingTimes;
 @property (nonatomic, readonly) float distance;
 
 @property (nonatomic, readonly) NSNumber *isHandleMinorAilments;
 
-@property (nonatomic, readonly) NSString *fullAddress;
+@property (nullable, nonatomic, readonly) NSString *fullAddress;
 
 - (instancetype)initWithDirectoryService:(DLSDirectoryServiceObject *)object;
 
@@ -43,6 +44,8 @@
 
 @interface DLSDirectoryServiceWrapper (DLSDescriptions)
 
-- (NSString *)openingTimesDescription;
+- (nullable NSString *)openingTimesDescription;
 
 @end
+
+NS_ASSUME_NONNULL_END
