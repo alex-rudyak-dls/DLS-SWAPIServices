@@ -20,6 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - Bolts/Tasks (1.6.0)
   - CocoaLumberjack (2.2.0):
     - CocoaLumberjack/Default (= 2.2.0)
     - CocoaLumberjack/Extensions (= 2.2.0)
@@ -28,8 +29,9 @@ PODS:
     - CocoaLumberjack/Core
   - CocoaLumberjack/Extensions (2.2.0):
     - CocoaLumberjack/Default
-  - DLS-SWAPIServices (0.1.0):
+  - DLS-SWAPIServices (0.2.12):
     - AFNetworking (~> 2)
+    - Bolts/Tasks (~> 1.6)
     - CocoaLumberjack (~> 2.2.0)
     - EasyMapping (= 0.15.4)
     - ITDispatchManagement (= 0.1.0)
@@ -93,7 +95,6 @@ PODS:
 DEPENDENCIES:
   - DLS-SWAPIServices (from `../`)
   - Expecta
-  - ITDispatchManagement (= 0.1.0)
   - Specta
 
 EXTERNAL SOURCES:
@@ -102,8 +103,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
+  Bolts: f52a250053bb517ca874523c3913776359ab3def
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
-  DLS-SWAPIServices: 8d913a33d42941f600b465044c70febd20ec164d
+  DLS-SWAPIServices: cac647b407af7e2c6176f0bee83475e8d8afcea2
   EasyMapping: e1f5942b26e1f5ae7129032117721a2972844f2f
   Expecta: e1c022fcd33910b6be89c291d2775b3fe27a89fe
   ITDispatchManagement: 86c25190f76d827a30aa0fab095e61c648043271

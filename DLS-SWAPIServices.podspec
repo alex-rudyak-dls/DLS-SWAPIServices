@@ -46,4 +46,5 @@ Pod::Spec.new do |s|
     s.dependency 'Underscore.m', '0.2.1'
     s.dependency 'NSDate-Escort', '1.5.3'
     s.dependency 'ITDispatchManagement', '0.1.0'
+    s.dependency 'Bolts/Tasks', '~> 1.6'
 end
