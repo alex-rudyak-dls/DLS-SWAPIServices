@@ -7,7 +7,6 @@
 //
 
 #import "DLSApplicationSettingsWrapper.h"
-#import "DLSModelsHelpers.h"
 
 
 @implementation DLSApplicationSettingsWrapper
