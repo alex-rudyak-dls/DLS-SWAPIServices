@@ -7,7 +7,6 @@
 //
 
 #import "DLSUserProfileService.h"
-#import <PromiseKit/PromiseKit.h>
 #import "DLSAuthenticationService.h"
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiErrors.h"

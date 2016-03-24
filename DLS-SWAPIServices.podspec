@@ -41,7 +41,6 @@ Pod::Spec.new do |s|
     s.dependency 'Realm', '0.96.3'
     s.dependency 'AFNetworking', '~> 2'
     s.dependency 'CocoaLumberjack', '~> 2.2.0'
-    s.dependency 'PromiseKit', '~> 1.5'
     s.dependency 'EasyMapping', '0.15.4'
     s.dependency 'Underscore.m', '0.2.1'
     s.dependency 'NSDate-Escort', '1.5.3'

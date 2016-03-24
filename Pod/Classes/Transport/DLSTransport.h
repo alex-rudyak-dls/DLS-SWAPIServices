@@ -10,7 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class PMKPromise;
 @class BFTask;
 
 @protocol DLSTransport
