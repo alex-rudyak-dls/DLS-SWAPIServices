@@ -12,78 +12,95 @@
 #import "DLSAppointmentObject.h"
 #import "DLSAuthenticationService.h"
 #import "DLSAnonymousAppointmentObject.h"
+#import "DLSApiErrors.h"
 
 
 @implementation DLSAppointmentsService
 
+- (BFTask *)bft_fetchAll
+{
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+        return [self.transport bft_fetchAllWithParams:nil];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSArray<DLSAppointmentObject *> *appointments = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSAppointmentObject objectMapping]];
+        return appointments;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
+}
+
 - (PMKPromise *)fetchAll
 {
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
+    return nil;
+}
+
+- (BFTask *)bft_fetchById:(id)identifier
+{
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchAllWithParams:nil];
-    }).thenOn(self.fetchQueue, ^(id response) {
-        NSArray<DLSAppointmentObject *> *appointments = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSAppointmentObject objectMapping]];
-        return appointments;
-    }).thenOn(self.responseQueue, ^(NSArray *appointments) {
-        [self _successWithResponse:appointments completion:nil];
-        return [PMKPromise promiseWithValue:appointments];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+        return [self.transport bft_fetchWithId:identifier];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        DLSAppointmentObject *appointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAppointmentObject objectMapping]];
+        return appointment;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
 }
 
 - (PMKPromise *)fetchById:(id)identifier
 {
-    return [super fetchById:identifier].thenOn(self.fetchQueue, ^() {
+    return nil;
+}
+
+- (BFTask<DLSAppointmentObject *> *)bft_createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest
+{
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSDictionary *const appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAppointmentObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchWithId:identifier];
-    }).thenOn(self.fetchQueue, ^(id response) {
-        DLSAppointmentObject *appointment = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSAppointmentObject objectMapping]];
-        return appointment;
-    }).thenOn(self.responseQueue, ^(DLSAppointmentObject *appointment) {
-        [self _successWithResponse:appointment completion:nil];
-        return [PMKPromise promiseWithValue:appointment];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+        return [self.transport create:appointmentDict];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        DLSAnonymousAppointmentObject *const registeredAppointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAnonymousAppointmentObject objectMapping]];
+        return registeredAppointment;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
 }
 
 - (PMKPromise *)createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest
 {
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        NSDictionary *appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAppointmentObject objectMapping]];
+    return nil;
+}
+
+- (BFTask<DLSAppointmentObject *> *)bft_createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest
+{
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSDictionary *const appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
         return [self.transport create:appointmentDict];
-    }).thenOn(self.fetchQueue, ^(id response) {
-        DLSAnonymousAppointmentObject *registeredAppointment = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSAnonymousAppointmentObject objectMapping]];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        DLSAnonymousAppointmentObject *const registeredAppointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         return registeredAppointment;
-    }).thenOn(self.responseQueue, ^(DLSAnonymousAppointmentObject *appointment) {
-        [self _successWithResponse:appointment completion:nil];
-        return [PMKPromise promiseWithValue:appointment];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
 }
 
 - (PMKPromise *)createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest
 {
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        NSDictionary *appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAnonymousAppointmentObject objectMapping]];
-        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport create:appointmentDict];
-    }).thenOn(self.fetchQueue, ^(id response) {
-        DLSAnonymousAppointmentObject *registeredAppointment = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSAnonymousAppointmentObject objectMapping]];
-        return registeredAppointment;
-    }).thenOn(self.responseQueue, ^(DLSAnonymousAppointmentObject *appointment) {
-        [self _successWithResponse:appointment completion:nil];
-        return [PMKPromise promiseWithValue:appointment];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+    return nil;
 }
 
 @end

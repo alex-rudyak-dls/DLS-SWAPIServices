@@ -14,7 +14,8 @@ OBJC_EXTERN NSString *const DLSSouthWorcestershireErrorDomain;
 
 typedef NS_ENUM(NSUInteger, DLSSouthWorcestershireErrorCode) {
     DLSSouthWorcestershireErrorCodeUnknown,
-    DLSSouthWorcestershireErrorCodeAuthentication
+    DLSSouthWorcestershireErrorCodeAuthentication,
+    DLSSouthWorcestershireErrorCodeSerialization
 };
 
 
@@ -22,7 +23,7 @@ typedef NS_ENUM(NSUInteger, DLSSouthWorcestershireErrorCode) {
 
 + (instancetype)errorWithDomainPostfix:(NSString *)postfix code:(DLSSouthWorcestershireErrorCode)code userInfo:(nullable NSDictionary<NSString *, id> *)dict;
 
-+ (instancetype)errorUnauthorizedAccessWithInfo:(NSDictionary<NSString *, id> *)dict;
++ (instancetype)errorUnauthorizedAccessWithInfo:(nullable NSDictionary<NSString *, id> *)dict;
 
 @end
 

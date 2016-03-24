@@ -20,6 +20,7 @@
 #import "DLSContactsService.h"
 #import "DLSContentTextService.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSServiceLayer : NSObject
 
@@ -36,6 +37,6 @@
 @property (nonatomic, strong) id<DLSContactsService> contactsService;
 @property (nonatomic, strong) id<DLSContentTextService> contentTextService;
 
-- (PMKPromise *)initialize;
-
 @end
+
+NS_ASSUME_NONNULL_END

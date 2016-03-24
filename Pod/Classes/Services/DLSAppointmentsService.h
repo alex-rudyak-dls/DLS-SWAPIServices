@@ -7,6 +7,9 @@
 //
 
 #import "DLSEntityAbstractService.h"
+#import <Bolts/BFTask.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class DLSAppointmentObject;
 @class DLSAnonymousAppointmentObject;
@@ -16,9 +19,16 @@
 - (PMKPromise *)createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest;
 - (PMKPromise *)createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest;
 
+- (BFTask<NSArray<DLSAppointmentObject *> *> *)bft_fetchAll;
+- (BFTask<DLSAppointmentObject *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSAppointmentObject *> *)bft_createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest;
+- (BFTask<DLSAppointmentObject *> *)bft_createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest;
+
 @end
 
 
 @interface DLSAppointmentsService : DLSEntityAbstractService <DLSAppointmentsService>
 
 @end
+
+NS_ASSUME_NONNULL_END

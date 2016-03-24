@@ -7,10 +7,19 @@
 //
 
 #import "DLSEntityAbstractService.h"
+#import <Bolts/BFTask.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class DLSFeedbackObject;
 
 @protocol DLSFeedbacksService <DLSEntityService>
 
 - (PMKPromise *)sendFeedback:(id)feedback;
+
+- (BFTask<NSArray<DLSFeedbackObject *> *> *)bft_fetchAll;
+- (BFTask<DLSFeedbackObject *> *)bft_fetchById:(id)identifier;
+- (BFTask *)bft_sendFeedback:(id)feedback;
 
 @end
 
@@ -19,3 +28,5 @@
 
 
 @end
+
+NS_ASSUME_NONNULL_END

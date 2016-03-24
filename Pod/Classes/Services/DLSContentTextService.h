@@ -7,8 +7,12 @@
 //
 
 #import <DLSEntityAbstractService.h>
+#import <Bolts/BFTask.h>
 #import "DLSApplicationSettingsService.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
+@class DLSApplicationContentObject;
 
 @protocol DLSContentTextService <DLSEntityService>
 
@@ -20,6 +24,12 @@
 
 - (PMKPromise *)checkLatestVersion;
 
+- (BFTask<NSArray<DLSApplicationContentObject *> *> *)bft_fetchAll;
+- (BFTask<DLSApplicationContentObject *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSApplicationContentObject *> *)bft_fetchLastVersionContent;
+- (BFTask<NSNumber *> *)bft_checkLatestVersion;
+
+
 @end
 
 @interface DLSContentTextService : DLSEntityAbstractService <DLSContentTextService>
@@ -29,3 +39,5 @@
 @property (nonatomic, strong) id<DLSApplicationSettingsService> appSettingsService;
 
 @end
+
+NS_ASSUME_NONNULL_END

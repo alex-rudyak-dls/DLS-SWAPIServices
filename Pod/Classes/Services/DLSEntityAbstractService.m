@@ -12,8 +12,6 @@
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSAuthenticationService.h"
 
-
-
 @implementation DLSEntityAbstractService
 
 + (instancetype)serviceWithConfiguration:(id<DLSServiceConfiguration>)configuration
@@ -26,8 +24,10 @@
     self = [super init];
     if (self) {
         _serviceConfiguration = configuration;
-        self.fetchQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        self.responseQueue = dispatch_get_main_queue();
+        _fetchQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
+        _responseQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
+        _fetchExecutor = [BFExecutor executorWithDispatchQueue:_fetchQueue];
+        _responseExecutor = [BFExecutor executorWithDispatchQueue:_responseQueue];
     }
     return self;
 }
@@ -46,33 +46,79 @@
     });
 }
 
-- (void)_failWithError:(NSError *)error completion:(void (^)(NSError *))completion
+- (BFTask *)bft_fetchAll
 {
-    it_dispatch_on_queue(self.responseQueue, ^{
-        DDLogDebug(@"[%@:General] %@", NSStringFromClass([self class]), [error localizedDescription]);
-        if (completion) {
-            completion(error);
-        }
-    });
+    return [BFTask cancelledTask];
 }
 
-- (void)_failWithError:(NSError *)error inMethod:(SEL)methodSelector completion:(void (^)(NSError *))completion
+- (BFTask *)bft_fetchById:(id)identifier
 {
-    it_dispatch_on_queue(self.responseQueue, ^{
-        DDLogDebug(@"[%@:%@] %@", NSStringFromClass([self class]), NSStringFromSelector(methodSelector), [error localizedDescription]);
-        if (completion) {
-            completion(error);
-        }
-    });
+    return [BFTask cancelledTask];
 }
 
-- (void)_successWithResponse:(id)response completion:(void (^)(id response))completion
+- (BFTask *)_failWithError:(NSError *)error
 {
-    it_dispatch_on_queue(self.responseQueue, ^{
-        if (completion) {
-            completion(response);
-        }
-    });
+    DDLogDebug(@"[%@:General] %@", NSStringFromClass([self class]), [error localizedDescription]);
+    return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+        return [BFTask taskWithError:error];
+    }];
+}
+
+- (BFTask *)_failWithError:(NSError *)error inMethod:(SEL)methodSelector
+{
+    DDLogDebug(@"[%@:%@] %@", NSStringFromClass([self class]), NSStringFromSelector(methodSelector), [error localizedDescription]);
+    return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+        return [BFTask taskWithError:error];
+    }];
+}
+
+- (BFTask *)_failWithException:(NSException *)exception
+{
+    DDLogDebug(@"[%@:General] %@", NSStringFromClass([self class]), [exception debugDescription]);
+    return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+        return [BFTask taskWithException:exception];
+    }];
+}
+
+- (BFTask *)_failWithException:(NSException *)exception inMethod:(SEL)methodSelector
+{
+    DDLogDebug(@"[%@:%@] %@", NSStringFromClass([self class]), NSStringFromSelector(methodSelector), [exception debugDescription]);
+    return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+        return [BFTask taskWithException:exception];
+    }];
+}
+
+- (BFTask *)_failOfTask:(BFTask *)superTask inMethod:(nonnull SEL)methodSelector
+{
+    if (superTask.error) {
+        return [self _failWithError:superTask.error inMethod:methodSelector];
+    } else if (superTask.exception) {
+        return [self _failWithException:superTask.exception inMethod:methodSelector];
+    } else {
+        return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+            return [BFTask cancelledTask];
+        }];
+    }
+}
+
+- (BFTask *)_failOfTask:(BFTask *)superTask
+{
+    if (superTask.error) {
+        return [self _failWithError:superTask.error];
+    } else if (superTask.exception) {
+        return [self _failWithException:superTask.exception];
+    } else {
+        return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+            return [BFTask cancelledTask];
+        }];
+    }
+}
+
+- (BFTask *)_successWithResponse:(id)response
+{
+    return [BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+        return [BFTask taskWithResult:response];
+    }];
 }
 
 @end

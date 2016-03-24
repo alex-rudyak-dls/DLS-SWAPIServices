@@ -23,51 +23,55 @@
 
 @implementation DLSApplicationSettingsService
 
+- (BFTask *)bft_fetchAll
+{
+    return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
+        NSError *error;
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
+
+        RLMResults *appSettings = [DLSApplicationSettingsObject allObjectsInRealm:realm];
+        NSMutableArray *appSettingsWrappers = [NSMutableArray arrayWithCapacity:appSettings.count];
+        for (DLSApplicationSettingsObject *obj in appSettings) {
+            [appSettingsWrappers addObject:[DLSApplicationSettingsWrapper appSettingsWithObject:obj]];
+        }
+
+        return [self _successWithResponse:[NSArray arrayWithArray:appSettingsWrappers]];
+    }];
+}
+
 - (PMKPromise *)fetchAll
 {
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(self.fetchQueue, ^{
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:resolve];
-                return;
-            }
+    return nil;
+}
 
-            RLMResults *appSettings = [DLSApplicationSettingsObject allObjectsInRealm:realm];
-            NSMutableArray *appSettingsWrappers = [NSMutableArray arrayWithCapacity:appSettings.count];
-            for (DLSApplicationSettingsObject *obj in appSettings) {
-                [appSettingsWrappers addObject:[DLSApplicationSettingsWrapper appSettingsWithObject:obj]];
-            }
+- (BFTask *)bft_fetchById:(id)identifier
+{
+    NSParameterAssert(identifier);
 
-            [self _successWithResponse:[NSArray arrayWithArray:appSettingsWrappers] completion:resolve];
-        });
+    return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
+        NSError *error;
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
+
+        DLSApplicationSettingsObject *appSettings = [DLSApplicationSettingsObject objectInRealm:realm forPrimaryKey:identifier];
+        if (!appSettings) {
+            appSettings = [DLSApplicationSettingsObject new];
+            appSettings.appId = identifier;
+        }
+        DLSApplicationSettingsWrapper *const appSettingsWrapper = [DLSApplicationSettingsWrapper appSettingsWithObject:appSettings];
+
+        return [self _successWithResponse:appSettingsWrapper];
     }];
 }
 
 - (PMKPromise *)fetchById:(id)identifier
 {
-    NSParameterAssert(identifier != nil);
-
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(self.fetchQueue, ^{
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:resolve];
-                return;
-            }
-
-            DLSApplicationSettingsObject *appSettings = [DLSApplicationSettingsObject objectInRealm:realm forPrimaryKey:identifier];
-            if (!appSettings) {
-                appSettings = [DLSApplicationSettingsObject new];
-                appSettings.appId = identifier;
-            }
-            DLSApplicationSettingsWrapper *appSettingsWrapper = [DLSApplicationSettingsWrapper appSettingsWithObject:appSettings];
-
-            [self _successWithResponse:appSettingsWrapper completion:resolve];
-        });
-    }];
+    return nil;
 }
 
 - (PMKPromise *)fetchCurrentAppSettings
@@ -77,23 +81,30 @@
 
 - (PMKPromise *)updateSettings:(DLSApplicationSettingsWrapper *)appSettings
 {
+    return nil;
+}
+
+- (BFTask<DLSApplicationSettingsWrapper *> *)bft_fetchCurrentAppSettings
+{
+    return [self bft_fetchById:@"south-worcestershire-app"];
+}
+
+- (BFTask<DLSApplicationSettingsWrapper *> *)bft_updateSettings:(DLSApplicationSettingsWrapper *)appSettings
+{
     NSParameterAssert(appSettings);
 
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(self.fetchQueue, ^{
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:resolve];
-                return;
-            }
+    return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
+        NSError *error;
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
 
-            [realm beginWriteTransaction];
-            [realm addOrUpdateObject:[appSettings appObject]];
-            [realm commitWriteTransaction];
+        [realm beginWriteTransaction];
+        [realm addOrUpdateObject:[appSettings appObject]];
+        [realm commitWriteTransaction];
 
-            [self _successWithResponse:appSettings completion:resolve];
-        });
+        return [self _successWithResponse:appSettings];
     }];
 }
 

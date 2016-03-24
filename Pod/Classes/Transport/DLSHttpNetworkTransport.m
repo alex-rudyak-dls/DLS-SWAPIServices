@@ -15,8 +15,6 @@
 #import "DLSApiErrors.h"
 #import "DLSApiConstants.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface DLSHttpNetworkTransport ()
 
 @property (nonatomic, strong) dispatch_queue_t queue;
@@ -241,7 +239,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (PMKPromise *)patch:(NSDictionary *)entity id:(id)entityIdentifier
 {
-
     return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
         [[self bft_patch:entity id:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
             if (task.result) {
@@ -257,8 +254,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BFTask *)bft_removeWithId:(id)entityIdentifier
 {
     NSParameterAssert(entityIdentifier);
-    NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
+
     BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
+    NSString *const urlPath = [NSString stringWithFormat:[self urlPath], entityIdentifier];
     [self.transportQueue addOperationWithBlock:^{
         [self.sessionManager DELETE:urlPath parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogVerbose(@"[HTTP:Transport:DELETE]: Success. %@(`{id: %@}`) - %@ ||| `%@`", urlPath, entityIdentifier, task.response, responseObject);
@@ -327,5 +325,3 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
-
-NS_ASSUME_NONNULL_END

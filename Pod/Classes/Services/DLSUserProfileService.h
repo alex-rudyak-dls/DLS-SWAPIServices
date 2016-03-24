@@ -7,14 +7,21 @@
 //
 
 #import "DLSEntityAbstractService.h"
+#import <Bolts/BFTask.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class DLSUserProfileWrapper;
 
 @protocol DLSUserProfileService <DLSEntityService>
 
 - (PMKPromise *)fetchUserProfile;
-
 - (PMKPromise *)updateUserProfile:(DLSUserProfileWrapper *)userProfile;
+
+- (BFTask<NSArray<DLSUserProfileWrapper *> *> *)bft_fetchAll;
+- (BFTask<DLSUserProfileWrapper *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSUserProfileWrapper *> *)bft_fetchUserProfile;
+- (BFTask<DLSUserProfileWrapper *> *)bft_updateUserProfile:(DLSUserProfileWrapper *)userProfile;
 
 @end
 
@@ -22,3 +29,5 @@
 @interface DLSUserProfileService : DLSEntityAbstractService <DLSUserProfileService>
 
 @end
+
+NS_ASSUME_NONNULL_END

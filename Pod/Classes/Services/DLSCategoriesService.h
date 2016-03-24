@@ -7,10 +7,17 @@
 //
 
 #import "DLSEntityAbstractService.h"
+#import <Bolts/BFTask.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class DLSCategoryWrapper;
 
 @protocol DLSCategoriesService <DLSEntityService>
 
 @property (nonatomic, strong) NSString *organisationId;
+
+- (BFTask<NSArray<DLSCategoryWrapper *> *> *)bft_fetchAll;
 
 @end
 
@@ -20,3 +27,5 @@
 @property (nonatomic, strong) NSString *organisationId;
 
 @end
+
+NS_ASSUME_NONNULL_END

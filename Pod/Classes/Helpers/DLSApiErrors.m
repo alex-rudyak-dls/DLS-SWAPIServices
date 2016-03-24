@@ -8,8 +8,6 @@
 
 #import "DLSApiErrors.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 NSString *const DLSSouthWorcestershireErrorDomain = @"uk.co.south-worcestershire-api";
 
 
@@ -33,5 +31,3 @@ NSString *const DLSSouthWorcestershireErrorDomain = @"uk.co.south-worcestershire
 }
 
 @end
-
-NS_ASSUME_NONNULL_END

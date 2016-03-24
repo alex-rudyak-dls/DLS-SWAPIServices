@@ -18,18 +18,17 @@
 
 @implementation DLSCategoriesService
 
-- (PMKPromise *)fetchAll
+- (BFTask *)bft_fetchAll
 {
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
         if (error) {
-            [self _failWithError:error inMethod:_cmd completion:nil];
-            @throw error;
+            return [self _failWithError:error inMethod:_cmd];
         }
 
-        RLMResults *categories = [DLSCategoryObject allObjectsInRealm:realm];
-        NSMutableArray<DLSCategoryWrapper *> *categoriesWrappers = [NSMutableArray arrayWithCapacity:categories.count];
+        RLMResults *const categories = [DLSCategoryObject allObjectsInRealm:realm];
+        NSMutableArray<DLSCategoryWrapper *> *const categoriesWrappers = [NSMutableArray arrayWithCapacity:categories.count];
         if (categories.count) {
             for (DLSCategoryObject *category in categories) {
                 [categoriesWrappers addObject:[DLSCategoryWrapper categoryWithObject:category]];
@@ -39,33 +38,38 @@
 
         [self updateMediumPaths];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchAllWithParams:nil].thenOn(self.fetchQueue, ^(id response) {
-            NSArray<DLSCategoryObject *> *categories = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSCategoryObject objectMapping]];
-            if (!categories.count) {
-                [self _successWithResponse:@[] completion:nil];
-                return [PMKPromise promiseWithValue:@[]];
-            }
+        return [self.transport bft_fetchAllWithParams:nil];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSArray<DLSCategoryObject *> *const categories = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSCategoryObject objectMapping]];
+        if (!categories.count) {
+            return [self _successWithResponse:@[]];
+        }
 
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:nil];
-                @throw error;
-            }
+        NSError *error;
+        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
 
-            [realm beginWriteTransaction];
-            [realm addOrUpdateObjectsFromArray:categories];
-            [realm commitWriteTransaction];
+        [realm beginWriteTransaction];
+        [realm addOrUpdateObjectsFromArray:categories];
+        [realm commitWriteTransaction];
 
-            NSArray<DLSCategoryWrapper *> *wrappers = [Underscore array](categories).map(^(DLSCategoryObject *category) {
-                return [DLSCategoryWrapper categoryWithObject:category];
-            }).unwrap;
-            return [PMKPromise promiseWithValue:wrappers];
-        });
-    }).thenOn(self.responseQueue, ^(NSArray *categories) {
-        [self _successWithResponse:categories completion:nil];
-        return [PMKPromise promiseWithValue:categories];
-    });
+        NSArray<DLSCategoryWrapper *> *const wrappers = [Underscore array](categories).map(^(DLSCategoryObject *category) {
+            return [DLSCategoryWrapper categoryWithObject:category];
+        }).unwrap;
+        return wrappers;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
+}
+
+- (PMKPromise *)fetchAll
+{
+    return nil;
 }
 
 #pragma mark - Helpers

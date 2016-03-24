@@ -11,6 +11,7 @@
 #import "DLSEntityService.h"
 #import <ITDispatchManagement/ITDispatchManagement.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSEntityAbstractService : NSObject <DLSEntityService>
 
@@ -28,7 +29,7 @@
 
 /**
  *  Describes on which queue response will be returned to user.
- *  Default: main queue
+ *  Default: background queue with default priority
  */
 @property (nonatomic, strong) dispatch_queue_t responseQueue;
 
@@ -42,4 +43,10 @@
 
 - (PMKPromise *)fetchById:(id)identifier NS_REQUIRES_SUPER;
 
+- (BFTask<NSArray *> *)bft_fetchAll;
+
+- (BFTask<id> *)bft_fetchById:(id)identifier;
+
 @end
+
+NS_ASSUME_NONNULL_END

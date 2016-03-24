@@ -17,72 +17,79 @@
 
 @implementation DLSOrganisationsService
 
-- (PMKPromise *)fetchById:(id)identifier
+- (BFTask *)bft_fetchAll
 {
-    return [super fetchById:identifier].thenOn(self.fetchQueue, ^() {
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchWithId:identifier];
-    }).thenOn(self.fetchQueue, ^(id response) {
-        DLSOrganisationObject *organisation = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSOrganisationObject objectMapping]];
-        if (!organisation) {
-            [self _successWithResponse:nil completion:nil];
-            return [PMKPromise promiseWithValue:nil];
-        }
-
-        NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-        if (error) {
-            [self _failWithError:error inMethod:_cmd completion:nil];
-            @throw error;
-        }
-
-        [realm beginWriteTransaction];
-        [realm addOrUpdateObject:organisation];
-        [realm commitWriteTransaction];
-
-        DLSOrganisationWrapper *wrapper = [DLSOrganisationWrapper organisationWithObject:organisation];
-        return [PMKPromise promiseWithValue:wrapper];
-    }).thenOn(self.responseQueue, ^(DLSOrganisationWrapper *organisation) {
-        [self _successWithResponse:organisation completion:nil];
-        return [PMKPromise promiseWithValue:organisation];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        @throw error;
-    });
-}
-
-- (PMKPromise *)fetchAll
-{
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchAllWithParams:nil];
-    }).thenOn(self.fetchQueue, ^(id response) {
-        NSArray<DLSOrganisationObject *> *organisations = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSOrganisationObject objectMapping]];
+        return [self.transport bft_fetchAllWithParams:nil];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSArray<DLSOrganisationObject *> *const organisations = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSOrganisationObject objectMapping]];
         if (!organisations.count) {
-            [self _successWithResponse:@[] completion:nil];
-            return [PMKPromise promiseWithValue:@[]];
+            return [self _successWithResponse:@[]];
         }
 
         NSError *error;
         RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
         if (error) {
-            [self _failWithError:error inMethod:_cmd completion:nil];
-            @throw error;
+            return [self _failWithError:error inMethod:_cmd];
         }
 
         [realm beginWriteTransaction];
         [realm addOrUpdateObjectsFromArray:organisations];
         [realm commitWriteTransaction];
 
-        NSArray<DLSOrganisationWrapper *> *wrappers = [Underscore array](organisations).map(^(DLSOrganisationObject *category) {
+        NSArray<DLSOrganisationWrapper *> *const wrappers = [Underscore array](organisations).map(^(DLSOrganisationObject *category) {
             return [DLSOrganisationWrapper organisationWithObject:category];
         }).unwrap;
-        return [PMKPromise promiseWithValue:wrappers];
-    }).thenOn(self.responseQueue, ^(NSArray *organisations) {
-        [self _successWithResponse:organisations completion:nil];
-        return [PMKPromise promiseWithValue:organisations];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        @throw error;
-    });
+
+        return wrappers;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
+}
+
+- (BFTask *)bft_fetchById:(id)identifier
+{
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+        return [self.transport bft_fetchWithId:identifier];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        DLSOrganisationObject *const organisation = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSOrganisationObject objectMapping]];
+        if (!organisation) {
+            return [self _successWithResponse:@[]];
+        }
+
+        NSError *error;
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
+
+        [realm beginWriteTransaction];
+        [realm addOrUpdateObject:organisation];
+        [realm commitWriteTransaction];
+
+        DLSOrganisationWrapper *const wrapper = [DLSOrganisationWrapper organisationWithObject:organisation];
+        return wrapper;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
+}
+
+- (PMKPromise *)fetchById:(id)identifier
+{
+    return nil;
+}
+
+- (PMKPromise *)fetchAll
+{
+    return nil;
 }
 
 @end

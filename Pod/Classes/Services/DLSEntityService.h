@@ -7,14 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Bolts/BFTask.h>
 #import "DLSEntityParser.h"
 #import "DLSTransport.h"
 #import "DLSServiceConfiguration.h"
 
+NS_ASSUME_NONNULL_BEGIN
 
+@class BFTask;
 @class PMKPromise;
 @class DLSAuthenticationService;
-
 
 @protocol DLSEntityService <NSObject>
 
@@ -29,8 +31,13 @@
 - (PMKPromise *)fetchAll;
 - (PMKPromise *)fetchById:(id)identifier;
 
+- (BFTask<NSArray *> *)bft_fetchAll;
+- (BFTask<id> *)bft_fetchById:(id)identifier;
+
 - (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration;
 
 + (instancetype)serviceWithConfiguration:(id<DLSServiceConfiguration>)configuration;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -22,68 +22,72 @@
 
 - (PMKPromise *)fetchAll
 {
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        return [self fetchAllServicesForLocation:self.currentLocation filteredBy:DLSServiceDirectoryFiltrationDefault sortedBy:DLSServiceDirectorySortDefault];
-    });
+    return nil;
+}
+
+- (BFTask *)bft_fetchAll
+{
+    return [self bft_fetchAllServicesForLocation:self.currentLocation filteredBy:DLSServiceDirectoryFiltrationDefault sortedBy:DLSServiceDirectorySortDefault];
 }
 
 - (PMKPromise *)fetchById:(id)identifier
 {
-    PMKPromise *errorValidation = [self validateParameters];
-    if (errorValidation) {
-        return errorValidation;
-    }
+    return nil;
+}
 
-    return [super fetchById:identifier].thenOn(self.fetchQueue, ^() {
+- (BFTask *)bft_fetchById:(id)identifier
+{
+    return [[[[[self bft_validateParameters] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self.authService checkToken];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self updateTransportPaths];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchWithId:identifier];
-    }).thenOn(self.fetchQueue, ^(NSDictionary *response) {
-        DLSDirectoryServiceObject *directoryService = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSDirectoryServiceObject objectMapping]];
+        return [self.transport bft_fetchWithId:identifier];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        DLSDirectoryServiceObject *const directoryService = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSDirectoryServiceObject objectMapping]];
         return [DLSDirectoryServiceWrapper directoryServiceWithObject:directoryService];
-    }).thenOn(self.responseQueue, ^(DLSDirectoryServiceWrapper *wrapper) {
-        [self _successWithResponse:wrapper completion:nil];
-        return [PMKPromise promiseWithValue:wrapper];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
 }
 
 - (PMKPromise *)fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
 {
-    PMKPromise *errorValidation = [self validateParameters];
-    if (errorValidation) {
-        return errorValidation;
-    }
+    return nil;
+}
 
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
+- (BFTask *)bft_fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
+{
+    return [[[[[self bft_validateParameters] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self.authService bft_checkToken];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self updateTransportPaths];
         if (filterKey & DLSServiceDirectoryFiltrationOpenNow) {
             [self.transport appendPathForOneRequest:@"open"];
         }
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchAllWithParams:@{
+        return [self.transport bft_fetchAllWithParams:@{
                                                     @"cat_id": self.categoryId,
                                                     @"minor_ailments": @((BOOL)(filterKey & DLSServiceDirectoryFiltrationMinorAilment)),
                                                     @"lat": @(location.latitude),
                                                     @"lng": @(location.longitude)
                                                     }];
-
-    }).thenOn(self.fetchQueue, ^(NSArray *response) {
-        NSArray<DLSDirectoryServiceObject *> *directoryServices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSDirectoryServiceObject objectMapping]];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSArray<DLSDirectoryServiceObject *> *const directoryServices = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSDirectoryServiceObject objectMapping]];
         return [Underscore array](directoryServices).map(^(DLSDirectoryServiceObject *directoryService) {
             return [DLSDirectoryServiceWrapper directoryServiceWithObject:directoryService];
         }).filter([self filterBlockForKey:filterKey])
         .sort([self sortBlockForKey:sortKey])
         .unwrap;
-    }).thenOn(self.responseQueue, ^(NSArray *directoryServices) {
-        [self _successWithResponse:directoryServices completion:nil];
-        return [PMKPromise promiseWithValue:directoryServices];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
 }
 
 - (PMKPromise *)fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
@@ -91,38 +95,43 @@
     return [self fetchAllServicesForLocation:self.currentLocation filteredBy:filterKey sortedBy:sortKey];
 }
 
+- (BFTask *)bft_fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
+{
+    return [self bft_fetchAllServicesForLocation:self.currentLocation filteredBy:filterKey sortedBy:sortKey];
+}
+
 - (PMKPromise *)fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
 {
-    PMKPromise *errorValidation = [self validateParameters];
-    if (errorValidation) {
-        return errorValidation;
-    }
+    return nil;
+}
 
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
+- (BFTask *)bft_fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
+{
+    return [[[[[self bft_validateParameters] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self.authService bft_checkToken];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self updateTransportPaths];
         if (filterKey & DLSServiceDirectoryFiltrationOpenNow) {
             [self.transport appendPathForOneRequest:@"open"];
         }
-        return [self.transport fetchAllWithParams:@{
+        return [self.transport bft_fetchAllWithParams:@{
                                                     @"cat_id": self.categoryId,
                                                     @"minor_ailments": @((BOOL)(filterKey & DLSServiceDirectoryFiltrationMinorAilment)),
                                                     @"postcode": postcode
                                                     }];
-
-    }).thenOn(self.fetchQueue, ^(NSArray *response) {
-        NSArray<DLSDirectoryServiceObject *> *directoryServices = [EKMapper arrayOfObjectsFromExternalRepresentation:response withMapping:[DLSDirectoryServiceObject objectMapping]];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSArray<DLSDirectoryServiceObject *> *const directoryServices = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSDirectoryServiceObject objectMapping]];
         return [Underscore array](directoryServices).map(^(DLSDirectoryServiceObject *directoryService) {
             return [DLSDirectoryServiceWrapper directoryServiceWithObject:directoryService];
         }).filter([self filterBlockForKey:filterKey])
         .sort([self sortBlockForKey:sortKey])
         .unwrap;
-    }).thenOn(self.responseQueue, ^(NSArray *directoryServices) {
-        [self _successWithResponse:directoryServices completion:nil];
-        return [PMKPromise promiseWithValue:directoryServices];
-    }).catchOn(self.responseQueue, ^(NSError *error) {
-        [self _failWithError:error inMethod:_cmd completion:nil];
-        @throw error;
-    });
+    }] continueWithExecutor:self.responseExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
 }
 
 #pragma mark -
@@ -200,9 +209,20 @@
     return nil;
 }
 
+- (BFTask *)bft_validateParameters
+{
+    if (self.organisationId.length == 0 || self.categoryId.length == 0) {
+        NSError *const error = [NSError errorWithDomainPostfix:@"services_directory.missed_property" code:DLSSouthWorcestershireErrorCodeUnknown userInfo:@{ NSLocalizedDescriptionKey : @"Missed one of key property to fetch services. First set it up to valid values" }];
+        return [BFTask taskWithError:error];
+    }
+
+    return [BFTask taskWithResult:nil];
+}
+
 - (void)updateTransportPaths
 {
     NSParameterAssert(self.organisationId);
+
     [self.transport updateMediumPathIdentifiers:@{
         DLSPathOrganisationEntityId : self.organisationId
     }];

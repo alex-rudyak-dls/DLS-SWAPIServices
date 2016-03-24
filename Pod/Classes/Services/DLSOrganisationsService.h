@@ -7,8 +7,16 @@
 //
 
 #import "DLSEntityAbstractService.h"
+#import <Bolts/BFTask.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class DLSOrganisationWrapper;
 
 @protocol DLSOrganisationsService <DLSEntityService>
+
+- (BFTask<NSArray<DLSOrganisationWrapper *> *> *)bft_fetchAll;
+- (BFTask<DLSOrganisationWrapper *> *)bft_fetchById:(id)identifier;
 
 @end
 
@@ -16,3 +24,5 @@
 @interface DLSOrganisationsService : DLSEntityAbstractService <DLSOrganisationsService>
 
 @end
+
+NS_ASSUME_NONNULL_END

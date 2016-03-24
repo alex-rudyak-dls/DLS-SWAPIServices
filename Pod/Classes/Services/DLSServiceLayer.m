@@ -7,14 +7,7 @@
 //
 
 #import "DLSServiceLayer.h"
-#import <PromiseKit/PromiseKit.h>
-
 
 @implementation DLSServiceLayer
-
-- (PMKPromise *)initialize
-{
-    return [PMKPromise promiseWithValue:@YES];
-}
 
 @end

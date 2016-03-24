@@ -8,6 +8,12 @@
 
 #import "DLSEntityAbstractService.h"
 #import "DLSPracticesConstants.h"
+#import <Bolts/BFTask.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class DLSPracticeWrapper;
+@class DLSPracticeShortWrapper;
 
 @protocol DLSPracticesService <DLSEntityService>
 
@@ -21,6 +27,13 @@
 - (PMKPromise *)fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey;
 - (PMKPromise *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub;
 
+- (BFTask<NSArray<DLSPracticeWrapper *> *> *)bft_fetchAll;
+- (BFTask<DLSPracticeWrapper *> *)bft_fetchById:(id)identifier;
+- (BFTask<NSArray<DLSPracticeWrapper *> *> *)bft_fetchPracticesSorted:(DLSPracticesListSort)sortKey;
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchAllPracticePreviews;
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey;
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub;
+
 @end
 
 
@@ -32,3 +45,5 @@
 @property (nonatomic, strong) NSString *organisationId;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -9,13 +9,30 @@
 #import <Foundation/Foundation.h>
 #import "DLSEntityAbstractService.h"
 
+@class BFTask;
+@class BFExecutor;
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface DLSEntityAbstractService ()
 
-- (void)_failWithError:(NSError *)error completion:(void (^)(NSError *error))completion;
+@property (nonatomic, strong, readonly) BFExecutor *fetchExecutor;
+@property (nonatomic, strong, readonly) BFExecutor *responseExecutor;
 
-- (void)_failWithError:(NSError *)error inMethod:(SEL)methodSelector completion:(void (^)(NSError *))completion;
+- (BFTask *)_failWithError:(NSError *)error;
 
-- (void)_successWithResponse:(id)response completion:(void (^)(id response))completion;
+- (BFTask *)_failWithError:(NSError *)error inMethod:(SEL)methodSelector;
+
+- (BFTask *)_failWithException:(NSException *)exception;
+
+- (BFTask *)_failWithException:(NSException *)exception inMethod:(SEL)methodSelector;
+
+- (BFTask *)_failOfTask:(BFTask *)superTask;
+
+- (BFTask *)_failOfTask:(BFTask *)superTask inMethod:(SEL)methodSelector;
+
+- (BFTask *)_successWithResponse:(nullable id)response;
 
 @end
+
+NS_ASSUME_NONNULL_END

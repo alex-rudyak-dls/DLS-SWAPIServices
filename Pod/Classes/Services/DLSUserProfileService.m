@@ -17,79 +17,88 @@
 
 @implementation DLSUserProfileService
 
-- (PMKPromise *)fetchUserProfile
+- (BFTask<DLSUserProfileWrapper *> *)bft_fetchUserProfile
 {
     if (!self.authService.isAuthorized) {
-        return [PMKPromise promiseWithValue:[NSError errorUnauthorizedAccessWithInfo:@{ NSLocalizedDescriptionKey : @"Cannot get user info profile" }]];
+        NSError *const domainError = [NSError errorUnauthorizedAccessWithInfo:@{ NSLocalizedDescriptionKey : @"Cannot get user info profile" }];
+        return [BFTask taskWithError:domainError];
     }
 
     NSString *const userId = self.authService.credentials.username;
-    return [self fetchById:userId].thenOn(self.fetchQueue, ^() {
+    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-        if (error) {
-            [self _failWithError:error inMethod:_cmd completion:nil];
-            @throw error;
-        }
-
-        DLSUserProfileObject *user = [DLSUserProfileObject objectInRealm:realm forPrimaryKey:self.authService.credentials.username];
-        if (user) {
-            DLSUserProfileWrapper *wrapper = [DLSUserProfileWrapper userWithObject:user];
-            [self _successWithResponse:wrapper completion:nil];
-            return [PMKPromise promiseWithValue:wrapper];
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (!error) {
+            DLSUserProfileObject *const user = [DLSUserProfileObject objectInRealm:realm forPrimaryKey:userId];
+            if (user) {
+                DLSUserProfileWrapper *const wrapper = [DLSUserProfileWrapper userWithObject:user];
+                return [self _successWithResponse:wrapper];
+            }
         }
 
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport fetchAllWithParams:nil].thenOn(self.fetchQueue, ^(NSDictionary *response) {
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:nil];
-                @throw error;
-            }
+        return [self.transport bft_fetchAllWithParams:nil];
+    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        NSError *error;
+        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
 
-            DLSUserProfileObject *userProfile = [EKMapper objectFromExternalRepresentation:response withMapping:[DLSUserProfileObject objectMapping]];
-            @try {
-                [realm beginWriteTransaction];
-                [realm addOrUpdateObject:userProfile];
-                [realm commitWriteTransaction];
-            }
-            @catch (NSException *exception) {
-                [realm cancelWriteTransaction];
-            }
+        DLSUserProfileObject *const userProfile = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSUserProfileObject objectMapping]];
+        @try {
+            [realm beginWriteTransaction];
+            [realm addOrUpdateObject:userProfile];
+            [realm commitWriteTransaction];
+        }
+        @catch (NSException *exception) {
+            [realm cancelWriteTransaction];
+        }
 
-            DLSUserProfileWrapper *wrapper = [DLSUserProfileWrapper userWithObject:userProfile];
-            [self _successWithResponse:wrapper completion:nil];
-            return [PMKPromise promiseWithValue:wrapper];
-        }).catchOn(self.fetchQueue, ^(NSError *error) {
-            [self _failWithError:error completion:nil];
-            @throw error;
-        });
-    });
+        DLSUserProfileWrapper *const wrapper = [DLSUserProfileWrapper userWithObject:userProfile];
+        return wrapper;
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
+    }];
+}
+
+- (PMKPromise *)fetchUserProfile
+{
+    return nil;
 }
 
 - (PMKPromise *)updateUserProfile:(DLSUserProfileWrapper *)userProfile
 {
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        it_dispatch_on_queue(self.fetchQueue, ^{
-            NSError *error;
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
-            if (error) {
-                [self _failWithError:error inMethod:_cmd completion:resolve];
-                return;
-            }
+    return nil;
+}
 
-            @try {
-                [realm beginWriteTransaction];
-                [realm addOrUpdateObject:[userProfile userProfileObject]];
-                [realm commitWriteTransaction];
-            }
-            @catch(NSException *exception) {
-                [realm cancelWriteTransaction];
-            }
+- (BFTask<DLSUserProfileWrapper *> *)bft_updateUserProfile:(DLSUserProfileWrapper *)userProfile
+{
+    return [[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
+        NSError *error;
+        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        if (error) {
+            return [self _failWithError:error inMethod:_cmd];
+        }
 
-            [self _successWithResponse:userProfile completion:resolve];
-        });
+        @try {
+            [realm beginWriteTransaction];
+            [realm addOrUpdateObject:[userProfile userProfileObject]];
+            [realm commitWriteTransaction];
+        }
+        @catch(NSException *exception) {
+            [realm cancelWriteTransaction];
+        }
+
+        return [self _successWithResponse:userProfile];
+    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+        if (task.isFaulted || task.isCancelled) {
+            return [self _failOfTask:task inMethod:_cmd];
+        }
+        return [self _successWithResponse:task.result];
     }];
 }
 
