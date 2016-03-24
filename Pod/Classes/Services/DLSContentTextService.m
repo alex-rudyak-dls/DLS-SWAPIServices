@@ -7,7 +7,6 @@
 //
 
 #import "DLSContentTextService.h"
-#import <PromiseKit/PromiseKit.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiErrors.h"
 #import "DLSApplicationSettingsWrapper.h"
@@ -57,16 +56,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)fetchLastVersionContent
-{
-    return nil;
-}
-
-- (PMKPromise *)checkLatestVersion
-{
-    return nil;
 }
 
 @end

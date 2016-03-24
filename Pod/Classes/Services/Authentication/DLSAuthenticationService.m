@@ -7,8 +7,8 @@
 //
 
 #import "DLSAuthenticationService.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Underscore.m/Underscore.h>
+#import <Bolts/Bolts.h>
 #import "DLSPrivateHeader.h"
 #import "DLSApiErrors.h"
 #import "DLSApiConstants.h"
@@ -122,11 +122,6 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (PMKPromise *)authWithCredentials:(DLSAuthCredentials *)credentials
-{
-    return [PMKPromise promiseWithValue:nil];
-}
-
 - (BFTask *)bft_restoreAuth
 {
     return [[[[self.appSettingsService bft_fetchCurrentAppSettings] continueWithSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
@@ -160,11 +155,6 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (PMKPromise *)restoreAuth
-{
-    return nil;
-}
-
 - (BFTask *)bft_checkToken
 {
     return [[BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
@@ -182,11 +172,6 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
         return [self _failWithError:domainError];
     }];
-}
-
-- (PMKPromise *)checkToken
-{
-    return nil;
 }
 
 - (BFTask<DLSAccessTokenWrapper *> *)bft_refreshToken:(DLSAccessTokenWrapper *)invalidToken
@@ -218,11 +203,6 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
         return self.token;
     }];
-}
-
-- (PMKPromise *)refreshToken:(DLSAccessTokenWrapper *)invalidToken
-{
-    return nil;
 }
 
 - (BFTask *)bft_logout
@@ -260,17 +240,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (PMKPromise *)logout
-{
-    return nil;
-}
-
 #pragma mark - Helpers
-
-- (PMKPromise *)loadExistedTokens
-{
-    return nil;
-}
 
 - (BFTask<NSArray<DLSAccessTokenWrapper *> *> *)bft_loadExistedTokens
 {

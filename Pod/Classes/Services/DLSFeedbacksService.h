@@ -15,17 +15,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DLSFeedbacksService <DLSEntityService>
 
-- (PMKPromise *)sendFeedback:(id)feedback;
-
 - (BFTask<NSArray<DLSFeedbackObject *> *> *)bft_fetchAll;
+
 - (BFTask<DLSFeedbackObject *> *)bft_fetchById:(id)identifier;
+
 - (BFTask *)bft_sendFeedback:(id)feedback;
 
 @end
 
 
 @interface DLSFeedbacksService : DLSEntityAbstractService <DLSFeedbacksService>
-
 
 @end
 

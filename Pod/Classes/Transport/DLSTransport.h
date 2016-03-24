@@ -29,25 +29,27 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) NSDictionary *mediumPathIdentifiers;
 
+#pragma mark - Presetup methods
+
 - (void)setupBasicAuthWithUsername:(NSString *)username password:(NSString *)password;
+
 - (void)updateMediumPathIdentifiers:(NSDictionary *)updatedIdentifiers;
+
 - (void)appendPathForOneRequest:(NSString *)temporalPath;
 
-- (PMKPromise *)fetchAllWithParams:(NSDictionary *)parameters;
-- (PMKPromise *)fetchWithId:(id)entityIdentifier;
-- (PMKPromise *)create:(NSDictionary *)entity;
-- (PMKPromise *)update:(NSDictionary *)entity id:(id)entityIdentifier;
-- (PMKPromise *)patch:(NSDictionary *)entity id:(id)entityIdentifier;
-- (PMKPromise *)removeWithId:(id)entityIdentifier;
+#pragma mark - Public
 
 - (BFTask *)bft_fetchAllWithParams:(nullable NSDictionary<NSString *, id> *)parameters;
+
 - (BFTask *)bft_fetchWithId:(id)entityIdentifier;
+
 - (BFTask *)bft_create:(NSDictionary *)entity;
+
 - (BFTask *)bft_update:(NSDictionary *)entity id:(id)entityIdentifier;
+
 - (BFTask *)bft_patch:(NSDictionary *)entity id:(id)entityIdentifier;
+
 - (BFTask *)bft_removeWithId:(id)entityIdentifier;
-
-
 
 @end
 

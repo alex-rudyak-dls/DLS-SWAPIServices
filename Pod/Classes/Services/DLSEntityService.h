@@ -14,8 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class BFTask;
-@class PMKPromise;
 @class DLSAuthenticationService;
 
 @protocol DLSEntityService <NSObject>
@@ -28,15 +26,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) id<DLSTransport> transport;
 @property (nonatomic, weak) DLSAuthenticationService *authService;
 
-- (PMKPromise *)fetchAll;
-- (PMKPromise *)fetchById:(id)identifier;
-
-- (BFTask<NSArray *> *)bft_fetchAll;
-- (BFTask<id> *)bft_fetchById:(id)identifier;
++ (instancetype)serviceWithConfiguration:(id<DLSServiceConfiguration>)configuration;
 
 - (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration;
 
-+ (instancetype)serviceWithConfiguration:(id<DLSServiceConfiguration>)configuration;
+#pragma mark - Public methods
+
+- (BFTask<NSArray *> *)bft_fetchAll;
+
+- (BFTask<id> *)bft_fetchById:(id)identifier;
 
 @end
 

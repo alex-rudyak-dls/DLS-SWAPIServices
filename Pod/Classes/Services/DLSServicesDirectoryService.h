@@ -22,14 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *categoryId;
 @property (nonatomic, strong) NSString *organisationId;
 
-- (PMKPromise *)fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
-- (PMKPromise *)fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
-- (PMKPromise *)fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
-
 - (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAll;
+
 - (BFTask<DLSDirectoryServiceWrapper *> *)bft_fetchById:(id)identifier;
+
 - (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
+
 - (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
+
 - (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
 
 @end

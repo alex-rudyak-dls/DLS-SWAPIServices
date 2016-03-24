@@ -7,7 +7,6 @@
 //
 
 #import "DLSOrganisationsService.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSOrganisationObject.h"
@@ -80,16 +79,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)fetchById:(id)identifier
-{
-    return nil;
-}
-
-- (PMKPromise *)fetchAll
-{
-    return nil;
 }
 
 @end

@@ -7,7 +7,6 @@
 //
 
 #import "DLSFeedbacksService.h"
-#import <PromiseKit/PromiseKit.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSFeedbackObject.h"
 #import "DLSAuthenticationService.h"
@@ -20,18 +19,13 @@
     return [[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const entity = [EKSerializer serializeObject:feedback withMapping:[DLSFeedbackObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport create:entity];
+        return [self.transport bft_create:entity];
     }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.isFaulted || task.isCancelled) {
             return [self _failOfTask:task inMethod:_cmd];
         }
         return [self _successWithResponse:nil];
     }];
-}
-
-- (PMKPromise *)sendFeedback:(id)feedback
-{
-    return nil;
 }
 
 @end

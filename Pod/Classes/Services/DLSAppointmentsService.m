@@ -7,7 +7,6 @@
 //
 
 #import "DLSAppointmentsService.h"
-#import <PromiseKit/PromiseKit.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSAppointmentObject.h"
 #import "DLSAuthenticationService.h"
@@ -33,11 +32,6 @@
     }];
 }
 
-- (PMKPromise *)fetchAll
-{
-    return nil;
-}
-
 - (BFTask *)bft_fetchById:(id)identifier
 {
     return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
@@ -54,17 +48,12 @@
     }];
 }
 
-- (PMKPromise *)fetchById:(id)identifier
-{
-    return nil;
-}
-
 - (BFTask<DLSAppointmentObject *> *)bft_createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest
 {
     return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAppointmentObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport create:appointmentDict];
+        return [self.transport bft_create:appointmentDict];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSAnonymousAppointmentObject *const registeredAppointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         return registeredAppointment;
@@ -74,11 +63,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest
-{
-    return nil;
 }
 
 - (BFTask<DLSAppointmentObject *> *)bft_createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest
@@ -86,7 +70,7 @@
     return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport create:appointmentDict];
+        return [self.transport bft_create:appointmentDict];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSAnonymousAppointmentObject *const registeredAppointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         return registeredAppointment;
@@ -96,11 +80,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest
-{
-    return nil;
 }
 
 @end

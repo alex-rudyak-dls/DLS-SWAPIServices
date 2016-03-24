@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol DLSOrganisationsService <DLSEntityService>
 
 - (BFTask<NSArray<DLSOrganisationWrapper *> *> *)bft_fetchAll;
+
 - (BFTask<DLSOrganisationWrapper *> *)bft_fetchById:(id)identifier;
 
 @end

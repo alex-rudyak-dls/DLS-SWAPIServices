@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <Bolts/Bolts.h>
+#import <Bolts/BFTask.h>
 #import "DLSTransport.h"
 #import "DLSAccessTokenWrapper.h"
 #import "DLSServiceConfiguration.h"
@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 OBJC_EXTERN NSString *const DLSAuthTokenPathKey;
 OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 
-@class PMKPromise;
 @class DLSAuthCredentials;
 
 @interface DLSAuthenticationService : NSObject
@@ -33,14 +32,6 @@ OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 @property (nonatomic, strong) NSDictionary<NSString *, id<DLSTransport>> *transports;
 @property (nullable, nonatomic, readonly) DLSAuthCredentials *credentials;
 
-- (PMKPromise *)authWithCredentials:(DLSAuthCredentials *)credentials;
-
-- (PMKPromise *)restoreAuth;
-
-- (PMKPromise *)checkToken;
-
-- (PMKPromise *)logout;
-
 - (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -48,8 +39,11 @@ OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 + (instancetype) new NS_UNAVAILABLE;
 
 - (BFTask *)bft_authWithCredentials:(DLSAuthCredentials *)credentials;
+
 - (BFTask *)bft_restoreAuth;
+
 - (BFTask *)bft_checkToken;
+
 - (BFTask *)bft_logout;
 
 @end

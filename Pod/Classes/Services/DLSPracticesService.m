@@ -7,7 +7,6 @@
 //
 
 #import "DLSPracticesService.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiConstants.h"
@@ -27,13 +26,6 @@
     }];
 }
 
-- (PMKPromise *)fetchAll
-{
-    return [super fetchAll].thenOn(self.fetchQueue, ^() {
-        return [self fetchPracticesSorted:DLSPracticesListSortDefault];
-    });
-}
-
 - (BFTask *)bft_fetchById:(id)identifier
 {
     return [[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
@@ -41,23 +33,11 @@
     }];
 }
 
-- (PMKPromise *)fetchById:(id)identifier
-{
-    return [super fetchById:identifier].thenOn(self.fetchQueue, ^() {
-        return [self fetchById:identifier withWrappersFactory:[DLSPracticeWrapperAbstractFactory new]];
-    });
-}
-
 - (BFTask<NSArray<DLSPracticeWrapper *> *> *)bft_fetchPracticesSorted:(DLSPracticesListSort)sortKey
 {
     return [[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         return [self bft_fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeWrapperAbstractFactory new]];
     }];
-}
-
-- (PMKPromise *)fetchPracticesSorted:(DLSPracticesListSort)sortKey
-{
-    return [self fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeWrapperAbstractFactory new]];
 }
 
 - (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey
@@ -68,27 +48,12 @@
 
 }
 
-- (PMKPromise *)fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey
-{
-    return [self fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeShortWrapperAbstractFactory new]];
-}
-
 - (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchAllPracticePreviews
 {
     return [self bft_fetchPracticesPreviewSorted:DLSPracticesListSortDefault];
 }
 
-- (PMKPromise *)fetchAllPracticePreviews
-{
-    return [self fetchPracticesPreviewSorted:DLSPracticesListSortDefault];
-}
-
 #pragma mark - Helpers
-
-- (PMKPromise *)fetchById:(id)identifier withWrappersFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
-{
-    return nil;
-}
 
 - (BFTask *)bft_fetchById:(id)identifier withWrappersFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
@@ -106,11 +71,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)fetchPracticesSorted:(DLSPracticesListSort)sortKey withWrapperFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
-{
-    return nil;
 }
 
 - (BFTask *)bft_fetchPracticesSorted:(DLSPracticesListSort)sortKey withWrapperFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
@@ -133,20 +93,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub
-{
-    const DLSPracticesListSort sortAction = DLSPracticesListSortAlphabetically;
-    if (!isOnlyPartOfHub) {
-        return [self fetchPracticesPreviewSorted:sortAction];
-    }
-
-    return [self fetchPracticesPreviewSorted:DLSPracticesListSortAlphabetically].thenOn(self.responseQueue, ^(NSArray<DLSPracticeShortWrapper *> *practices) {
-        return [PMKPromise promiseWithValue:[Underscore array](practices).filter(^ BOOL(DLSPracticeShortWrapper *practice) {
-            return practice.isPartOfHub;
-        }).unwrap];
-    });
 }
 
 - (BFTask *)bft_fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub

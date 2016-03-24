@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AFNetworking/AFHTTPSessionManager.h>
 #import "DLSTransport.h"
-#import <AFNetworking/AFNetworking.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

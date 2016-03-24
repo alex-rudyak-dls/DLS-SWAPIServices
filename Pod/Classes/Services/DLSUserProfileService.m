@@ -65,16 +65,6 @@
     }];
 }
 
-- (PMKPromise *)fetchUserProfile
-{
-    return nil;
-}
-
-- (PMKPromise *)updateUserProfile:(DLSUserProfileWrapper *)userProfile
-{
-    return nil;
-}
-
 - (BFTask<DLSUserProfileWrapper *> *)bft_updateUserProfile:(DLSUserProfileWrapper *)userProfile
 {
     return [[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{

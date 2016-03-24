@@ -8,7 +8,6 @@
 
 #import "DLSServicesDirectoryService.h"
 #import "DLSEntityAbstractService_Private.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Underscore.m/Underscore.h>
 #import "DLSAppPaths.h"
 #import "DLSDirectoryServiceObject.h"
@@ -20,25 +19,15 @@
 
 @implementation DLSServicesDirectoryService
 
-- (PMKPromise *)fetchAll
-{
-    return nil;
-}
-
 - (BFTask *)bft_fetchAll
 {
     return [self bft_fetchAllServicesForLocation:self.currentLocation filteredBy:DLSServiceDirectoryFiltrationDefault sortedBy:DLSServiceDirectorySortDefault];
 }
 
-- (PMKPromise *)fetchById:(id)identifier
-{
-    return nil;
-}
-
 - (BFTask *)bft_fetchById:(id)identifier
 {
     return [[[[[self bft_validateParameters] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        return [self.authService checkToken];
+        return [self.authService bft_checkToken];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self updateTransportPaths];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
@@ -52,11 +41,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
-{
-    return nil;
 }
 
 - (BFTask *)bft_fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
@@ -90,19 +74,9 @@
     }];
 }
 
-- (PMKPromise *)fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
-{
-    return [self fetchAllServicesForLocation:self.currentLocation filteredBy:filterKey sortedBy:sortKey];
-}
-
 - (BFTask *)bft_fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
 {
     return [self bft_fetchAllServicesForLocation:self.currentLocation filteredBy:filterKey sortedBy:sortKey];
-}
-
-- (PMKPromise *)fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
-{
-    return nil;
 }
 
 - (BFTask *)bft_fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey
@@ -198,16 +172,6 @@
 }
 
 #pragma mark -
-
-- (PMKPromise *)validateParameters
-{
-    if (self.organisationId.length == 0 || self.categoryId.length == 0) {
-        NSError *const error = [NSError errorWithDomainPostfix:@"services_directory.missed_property" code:DLSSouthWorcestershireErrorCodeUnknown userInfo:@{ NSLocalizedDescriptionKey : @"Missed one of key property to fetch services. First set it up to valid values" }];
-        return [PMKPromise promiseWithValue:error];
-    }
-
-    return nil;
-}
 
 - (BFTask *)bft_validateParameters
 {

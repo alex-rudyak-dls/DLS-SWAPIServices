@@ -7,7 +7,7 @@
 //
 
 #import "DLSEntityAbstractService.h"
-#import <PromiseKit/PromiseKit.h>
+#import <Bolts/Bolts.h>
 #import "DLSPrivateHeader.h"
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSAuthenticationService.h"
@@ -32,27 +32,15 @@
     return self;
 }
 
-- (PMKPromise *)fetchAll
-{
-    return [self.authService checkToken].thenOn(self.fetchQueue, ^() {
-        return [PMKPromise promiseWithValue:@[]];
-    });
-}
-
-- (PMKPromise *)fetchById:(id)identifier
-{
-    return [self.authService checkToken].thenOn(self.fetchQueue, ^() {
-        return [PMKPromise promiseWithValue:nil];
-    });
-}
-
 - (BFTask *)bft_fetchAll
 {
+    //TODO: implement in siblings
     return [BFTask cancelledTask];
 }
 
 - (BFTask *)bft_fetchById:(id)identifier
 {
+    //TODO: implement in siblings
     return [BFTask cancelledTask];
 }
 

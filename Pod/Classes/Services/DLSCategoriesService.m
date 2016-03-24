@@ -7,7 +7,6 @@
 //
 
 #import "DLSCategoriesService.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiConstants.h"
@@ -33,7 +32,7 @@
             for (DLSCategoryObject *category in categories) {
                 [categoriesWrappers addObject:[DLSCategoryWrapper categoryWithObject:category]];
             }
-            return [PMKPromise promiseWithValue:[NSArray arrayWithArray:categoriesWrappers]];
+            return [self _successWithResponse:[NSArray arrayWithArray:categoriesWrappers]];
         }
 
         [self updateMediumPaths];
@@ -65,11 +64,6 @@
         }
         return [self _successWithResponse:task.result];
     }];
-}
-
-- (PMKPromise *)fetchAll
-{
-    return nil;
 }
 
 #pragma mark - Helpers

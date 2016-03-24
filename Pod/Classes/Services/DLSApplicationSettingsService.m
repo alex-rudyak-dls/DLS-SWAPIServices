@@ -8,7 +8,6 @@
 
 #import "DLSApplicationSettingsService.h"
 #import "DLSEntityAbstractService_Private.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Realm/Realm.h>
 #import <ITDispatchManagement/ITDispatchManagement.h>
 #import "DLSApplicationSettingsObject.h"
@@ -42,11 +41,6 @@
     }];
 }
 
-- (PMKPromise *)fetchAll
-{
-    return nil;
-}
-
 - (BFTask *)bft_fetchById:(id)identifier
 {
     NSParameterAssert(identifier);
@@ -67,21 +61,6 @@
 
         return [self _successWithResponse:appSettingsWrapper];
     }];
-}
-
-- (PMKPromise *)fetchById:(id)identifier
-{
-    return nil;
-}
-
-- (PMKPromise *)fetchCurrentAppSettings
-{
-    return [self fetchById:@"south-worcestershire-app"];
-}
-
-- (PMKPromise *)updateSettings:(DLSApplicationSettingsWrapper *)appSettings
-{
-    return nil;
 }
 
 - (BFTask<DLSApplicationSettingsWrapper *> *)bft_fetchCurrentAppSettings

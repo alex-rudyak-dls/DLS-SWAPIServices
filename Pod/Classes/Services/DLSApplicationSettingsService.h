@@ -16,13 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DLSApplicationSettingsService <DLSEntityService>
 
-- (PMKPromise *)fetchCurrentAppSettings;
-
-- (PMKPromise *)updateSettings:(DLSApplicationSettingsWrapper *)appSettings;
-
 - (BFTask<NSArray<DLSApplicationSettingsWrapper *> *> *)bft_fetchAll;
+
 - (BFTask<DLSApplicationSettingsWrapper *> *)bft_fetchById:(id)identifier;
+
 - (BFTask<DLSApplicationSettingsWrapper *> *)bft_fetchCurrentAppSettings;
+
 - (BFTask<DLSApplicationSettingsWrapper *> *)bft_updateSettings:(DLSApplicationSettingsWrapper *)appSettings;
 
 @end

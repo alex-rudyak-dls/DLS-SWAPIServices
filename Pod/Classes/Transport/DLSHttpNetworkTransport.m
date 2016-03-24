@@ -7,25 +7,23 @@
 //
 
 #import "DLSHttpNetworkTransport.h"
-#import <PromiseKit/PromiseKit.h>
 #import <Bolts/Bolts.h>
-#import "DLSPrivateHeader.h"
 #import <ITDispatchManagement/ITDispatchManagement.h>
-#import "NSString+DLSEntityParsing.h"
+#import "DLSPrivateHeader.h"
 #import "DLSApiErrors.h"
 #import "DLSApiConstants.h"
+#import "NSString+DLSEntityParsing.h"
 
 @interface DLSHttpNetworkTransport ()
 
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, strong) NSOperationQueue *transportQueue;
 @property (nonatomic, strong) BFExecutor *taskExecutor;
+@property (nonatomic, strong) NSString *appendedPath;
 
 @end
 
-@implementation DLSHttpNetworkTransport {
-    NSString *_appendedPath;
-}
+@implementation DLSHttpNetworkTransport
 
 - (instancetype)initWithManager:(AFHTTPSessionManager *)sessionManager pathFormat:(NSString *)pathFormat
 {
@@ -95,20 +93,6 @@
     return taskSource.task;
 }
 
-- (PMKPromise *)fetchAllWithParams:(NSDictionary *)parameters
-{
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        [[self bft_fetchAllWithParams:parameters] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
-            if (task.result) {
-                resolve(task.result);
-            } else {
-                resolve(task.error);
-            }
-            return nil;
-        }];
-    }];
-}
-
 - (BFTask *)bft_fetchWithId:(id)entityIdentifier
 {
     BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
@@ -127,22 +111,6 @@
         }
     }];
     return taskSource.task;
-}
-
-- (PMKPromise *)fetchWithId:(id)entityIdentifier
-{
-    NSParameterAssert(entityIdentifier);
-
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        [[self bft_fetchWithId:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
-            if (task.result) {
-                resolve(task.result);
-            } else {
-                resolve(task.error);
-            }
-            return nil;
-        }];
-    }];
 }
 
 - (BFTask *)bft_create:(NSDictionary *)entity
@@ -166,20 +134,6 @@
 
 }
 
-- (PMKPromise *)create:(NSDictionary *)entity
-{
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        [[self bft_create:entity] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
-            if (task.result) {
-                resolve(task.result);
-            } else {
-                resolve(task.error);
-            }
-            return nil;
-        }];
-    }];
-}
-
 - (BFTask *)bft_update:(NSDictionary *)entity id:(id)entityIdentifier
 {
     NSParameterAssert(entity);
@@ -199,20 +153,6 @@
         }];
     }];
     return taskSource.task;
-}
-
-- (PMKPromise *)update:(NSDictionary *)entity id:(id)entityIdentifier
-{
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        [[self bft_update:entity id:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
-            if (task.result) {
-                resolve(task.result);
-            } else {
-                resolve(task.error);
-            }
-            return nil;
-        }];
-    }];
 }
 
 - (BFTask *)bft_patch:(NSDictionary *)entity id:(id)entityIdentifier
@@ -237,20 +177,6 @@
     return taskSource.task;
 }
 
-- (PMKPromise *)patch:(NSDictionary *)entity id:(id)entityIdentifier
-{
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        [[self bft_patch:entity id:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
-            if (task.result) {
-                resolve(task.result);
-            } else {
-                resolve(task.error);
-            }
-            return nil;
-        }];
-    }];
-}
-
 - (BFTask *)bft_removeWithId:(id)entityIdentifier
 {
     NSParameterAssert(entityIdentifier);
@@ -269,20 +195,6 @@
     return taskSource.task;
 }
 
-- (PMKPromise *)removeWithId:(id)entityIdentifier
-{
-    return [PMKPromise promiseWithResolver:^(PMKResolver resolve) {
-        [[self bft_removeWithId:entityIdentifier] continueWithBlock:^id _Nullable(BFTask * _Nonnull task) {
-            if (task.result) {
-                resolve(task.result);
-            } else {
-                resolve(task.error);
-            }
-            return nil;
-        }];
-    }];
-}
-
 - (void)updateMediumPathIdentifiers:(NSDictionary *)updatedIdentifiers
 {
     if (!updatedIdentifiers.count) {
@@ -298,7 +210,7 @@
 
 - (void)appendPathForOneRequest:(NSString *)temporalPath
 {
-    _appendedPath = temporalPath;
+    self.appendedPath = temporalPath;
 }
 
 #pragma mark - Internals
@@ -306,9 +218,9 @@
 - (NSString *)urlPath
 {
     __block NSString *filledPath = [self.pathFormat copy];
-    if (_appendedPath.length) {
-        filledPath = [filledPath stringByAppendingPathComponent:_appendedPath];
-        _appendedPath = nil;
+    if (self.appendedPath.length) {
+        filledPath = [filledPath stringByAppendingPathComponent:self.appendedPath];
+        self.appendedPath = nil;
     }
     if ([self.pathFormat dls_containsEntities]) {
         [self.mediumPathIdentifiers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {

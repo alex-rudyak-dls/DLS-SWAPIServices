@@ -15,10 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DLSContactsService <DLSEntityService>
 
-- (PMKPromise *)sendContactInformation:(id)contactInfo;
-
 - (BFTask<NSArray<DLSContactObject *> *> *)bft_fetchAll;
+
 - (BFTask<DLSContactObject *> *)bft_fetchById:(id)identifier;
+
 - (BFTask *)bft_sendContactInformation:(id)contactInfo;
 
 @end

@@ -16,12 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DLSAppointmentsService <DLSEntityService>
 
-- (PMKPromise *)createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest;
-- (PMKPromise *)createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest;
-
 - (BFTask<NSArray<DLSAppointmentObject *> *> *)bft_fetchAll;
+
 - (BFTask<DLSAppointmentObject *> *)bft_fetchById:(id)identifier;
+
 - (BFTask<DLSAppointmentObject *> *)bft_createNewAppointmentRequest:(DLSAppointmentObject *)appointmentRequest;
+
 - (BFTask<DLSAppointmentObject *> *)bft_createAnonymousAppointmentRequest:(DLSAnonymousAppointmentObject *)appointmentRequest;
 
 @end

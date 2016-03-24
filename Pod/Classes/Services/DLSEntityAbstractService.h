@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DLSEntityAbstractService : NSObject <DLSEntityService>
 
 @property (nonatomic, readonly) id<DLSServiceConfiguration> serviceConfiguration;
-
 @property (nonatomic, strong) id<DLSEntityParser> parser;
 @property (nonatomic, strong) id<DLSTransport> transport;
 @property (nonatomic, weak) DLSAuthenticationService *authService;
@@ -38,10 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype) new NS_UNAVAILABLE;
 
 - (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration NS_DESIGNATED_INITIALIZER;
-
-- (PMKPromise *)fetchAll NS_REQUIRES_SUPER;
-
-- (PMKPromise *)fetchById:(id)identifier NS_REQUIRES_SUPER;
 
 - (BFTask<NSArray *> *)bft_fetchAll;
 
