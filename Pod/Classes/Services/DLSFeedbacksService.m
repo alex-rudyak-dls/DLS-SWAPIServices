@@ -14,12 +14,12 @@
 
 @implementation DLSFeedbacksService
 
-- (BFTask *)bft_sendFeedback:(id)feedback
+- (BFTask *)sendFeedback:(id)feedback
 {
-    return [[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const entity = [EKSerializer serializeObject:feedback withMapping:[DLSFeedbackObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport bft_create:entity];
+        return [self.transport create:entity];
     }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.isFaulted || task.isCancelled) {
             return [self _failOfTask:task inMethod:_cmd];

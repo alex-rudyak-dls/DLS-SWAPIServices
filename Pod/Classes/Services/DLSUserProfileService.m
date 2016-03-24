@@ -16,7 +16,7 @@
 
 @implementation DLSUserProfileService
 
-- (BFTask<DLSUserProfileWrapper *> *)bft_fetchUserProfile
+- (BFTask<DLSUserProfileWrapper *> *)fetchUserProfile
 {
     if (!self.authService.isAuthorized) {
         NSError *const domainError = [NSError errorUnauthorizedAccessWithInfo:@{ NSLocalizedDescriptionKey : @"Cannot get user info profile" }];
@@ -24,7 +24,7 @@
     }
 
     NSString *const userId = self.authService.credentials.username;
-    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
         RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
         if (!error) {
@@ -36,7 +36,7 @@
         }
 
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport bft_fetchAllWithParams:nil];
+        return [self.transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
         RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
@@ -64,7 +64,7 @@
     }];
 }
 
-- (BFTask<DLSUserProfileWrapper *> *)bft_updateUserProfile:(DLSUserProfileWrapper *)userProfile
+- (BFTask<DLSUserProfileWrapper *> *)updateUserProfile:(DLSUserProfileWrapper *)userProfile
 {
     return [[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         NSError *error;

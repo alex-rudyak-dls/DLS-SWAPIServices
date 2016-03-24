@@ -21,17 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) id<DLSTransport> entityTransport;
 @property (nonatomic, strong) NSString *organisationId;
 
-- (BFTask<NSArray<DLSPracticeWrapper *> *> *)bft_fetchAll;
+- (BFTask<NSArray<DLSPracticeWrapper *> *> *)fetchAll;
 
-- (BFTask<DLSPracticeWrapper *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSPracticeWrapper *> *)fetchById:(id)identifier;
 
-- (BFTask<NSArray<DLSPracticeWrapper *> *> *)bft_fetchPracticesSorted:(DLSPracticesListSort)sortKey;
+- (BFTask<NSArray<DLSPracticeWrapper *> *> *)fetchPracticesSorted:(DLSPracticesListSort)sortKey;
 
-- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchAllPracticePreviews;
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)fetchAllPracticePreviews;
 
-- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey;
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey;
 
-- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub;
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub;
 
 @end
 

@@ -38,13 +38,13 @@ OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 
 + (instancetype) new NS_UNAVAILABLE;
 
-- (BFTask *)bft_authWithCredentials:(DLSAuthCredentials *)credentials;
+- (BFTask *)authWithCredentials:(DLSAuthCredentials *)credentials;
 
-- (BFTask *)bft_restoreAuth;
+- (BFTask *)restoreAuth;
 
-- (BFTask *)bft_checkToken;
+- (BFTask *)checkToken;
 
-- (BFTask *)bft_logout;
+- (BFTask *)logout;
 
 @end
 

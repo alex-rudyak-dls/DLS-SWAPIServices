@@ -20,13 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) id<DLSTransport> contentTransport;
 @property (nonatomic, strong) id<DLSApplicationSettingsService> appSettingsService;
 
-- (BFTask<NSArray<DLSApplicationContentObject *> *> *)bft_fetchAll;
+- (BFTask<NSArray<DLSApplicationContentObject *> *> *)fetchAll;
 
-- (BFTask<DLSApplicationContentObject *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSApplicationContentObject *> *)fetchById:(id)identifier;
 
-- (BFTask<DLSApplicationContentObject *> *)bft_fetchLastVersionContent;
+- (BFTask<DLSApplicationContentObject *> *)fetchLastVersionContent;
 
-- (BFTask<NSNumber *> *)bft_checkLatestVersion;
+- (BFTask<NSNumber *> *)checkLatestVersion;
 
 @end
 

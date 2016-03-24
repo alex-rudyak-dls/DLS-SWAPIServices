@@ -17,9 +17,9 @@
 
 @implementation DLSCategoriesService
 
-- (BFTask *)bft_fetchAll
+- (BFTask *)fetchAll
 {
-    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
         RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
         if (error) {
@@ -37,7 +37,7 @@
 
         [self updateMediumPaths];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport bft_fetchAllWithParams:nil];
+        return [self.transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSArray<DLSCategoryObject *> *const categories = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSCategoryObject objectMapping]];
         if (!categories.count) {

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *organisationId;
 
-- (BFTask<NSArray<DLSCategoryWrapper *> *> *)bft_fetchAll;
+- (BFTask<NSArray<DLSCategoryWrapper *> *> *)fetchAll;
 
 @end
 

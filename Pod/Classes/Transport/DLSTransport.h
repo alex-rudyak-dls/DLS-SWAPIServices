@@ -38,17 +38,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Public
 
-- (BFTask *)bft_fetchAllWithParams:(nullable NSDictionary<NSString *, id> *)parameters;
+- (BFTask *)fetchAllWithParams:(nullable NSDictionary<NSString *, id> *)parameters;
 
-- (BFTask *)bft_fetchWithId:(id)entityIdentifier;
+- (BFTask *)fetchWithId:(id)entityIdentifier;
 
-- (BFTask *)bft_create:(NSDictionary *)entity;
+- (BFTask *)create:(NSDictionary *)entity;
 
-- (BFTask *)bft_update:(NSDictionary *)entity id:(id)entityIdentifier;
+- (BFTask *)update:(NSDictionary *)entity id:(id)entityIdentifier;
 
-- (BFTask *)bft_patch:(NSDictionary *)entity id:(id)entityIdentifier;
+- (BFTask *)patch:(NSDictionary *)entity id:(id)entityIdentifier;
 
-- (BFTask *)bft_removeWithId:(id)entityIdentifier;
+- (BFTask *)removeWithId:(id)entityIdentifier;
 
 @end
 

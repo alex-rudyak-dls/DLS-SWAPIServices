@@ -16,11 +16,11 @@
 
 @implementation DLSOrganisationsService
 
-- (BFTask *)bft_fetchAll
+- (BFTask *)fetchAll
 {
-    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport bft_fetchAllWithParams:nil];
+        return [self.transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSArray<DLSOrganisationObject *> *const organisations = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSOrganisationObject objectMapping]];
         if (!organisations.count) {
@@ -50,11 +50,11 @@
     }];
 }
 
-- (BFTask *)bft_fetchById:(id)identifier
+- (BFTask *)fetchById:(id)identifier
 {
-    return [[[[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [self.transport bft_fetchWithId:identifier];
+        return [self.transport fetchWithId:identifier];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSOrganisationObject *const organisation = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSOrganisationObject objectMapping]];
         if (!organisation) {

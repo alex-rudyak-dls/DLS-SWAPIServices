@@ -22,15 +22,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *categoryId;
 @property (nonatomic, strong) NSString *organisationId;
 
-- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAll;
+- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)fetchAll;
 
-- (BFTask<DLSDirectoryServiceWrapper *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSDirectoryServiceWrapper *> *)fetchById:(id)identifier;
 
-- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
+- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)fetchAllServicesForLocation:(DLSLocationWrapper *)location filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
 
-- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
+- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)fetchAllServicesFilteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
 
-- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)bft_fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
+- (BFTask<NSArray<DLSDirectoryServiceWrapper *> *> *)fetchAllServicesWithPostcode:(NSString *)postcode filteredBy:(DLSServiceDirectoryFiltration)filterKey sortedBy:(DLSServiceDirectorySort)sortKey;
 
 @end
 

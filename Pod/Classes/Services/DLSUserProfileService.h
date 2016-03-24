@@ -15,13 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DLSUserProfileService <DLSEntityService>
 
-- (BFTask<NSArray<DLSUserProfileWrapper *> *> *)bft_fetchAll;
+- (BFTask<NSArray<DLSUserProfileWrapper *> *> *)fetchAll;
 
-- (BFTask<DLSUserProfileWrapper *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSUserProfileWrapper *> *)fetchById:(id)identifier;
 
-- (BFTask<DLSUserProfileWrapper *> *)bft_fetchUserProfile;
+- (BFTask<DLSUserProfileWrapper *> *)fetchUserProfile;
 
-- (BFTask<DLSUserProfileWrapper *> *)bft_updateUserProfile:(DLSUserProfileWrapper *)userProfile;
+- (BFTask<DLSUserProfileWrapper *> *)updateUserProfile:(DLSUserProfileWrapper *)userProfile;
 
 @end
 

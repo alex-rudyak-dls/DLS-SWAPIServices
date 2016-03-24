@@ -15,11 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DLSContactsService <DLSEntityService>
 
-- (BFTask<NSArray<DLSContactObject *> *> *)bft_fetchAll;
+- (BFTask<NSArray<DLSContactObject *> *> *)fetchAll;
 
-- (BFTask<DLSContactObject *> *)bft_fetchById:(id)identifier;
+- (BFTask<DLSContactObject *> *)fetchById:(id)identifier;
 
-- (BFTask *)bft_sendContactInformation:(id)contactInfo;
+- (BFTask *)sendContactInformation:(id)contactInfo;
 
 @end
 

@@ -60,7 +60,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     return [self.token isValid];
 }
 
-- (BFTask *)bft_authWithCredentials:(DLSAuthCredentials *)credentials
+- (BFTask *)authWithCredentials:(DLSAuthCredentials *)credentials
 {
     NSParameterAssert(credentials);
 
@@ -73,7 +73,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
     id<DLSTransport> const authorizeTransport = self.transports[DLSAuthTokenPathKey];
 
-    return [[[[authorizeTransport bft_create:@{
+    return [[[[authorizeTransport create:@{
                                                @"grant_type" : kDLSAuthGrantType,
                                                @"scope" : kDLSAuthScope,
                                                @"client_id" : kDLSAuthCliendId,
@@ -94,11 +94,11 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         [realm addOrUpdateObject:token];
         [realm commitWriteTransaction];
 
-        return [self.appSettingsService bft_fetchCurrentAppSettings];
+        return [self.appSettingsService fetchCurrentAppSettings];
     }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
         task.result.lastLoggedInUsername = self.credentials.username;
         task.result.lastStartupDate = [NSDate date];
-        return [self.appSettingsService bft_updateSettings:task.result];
+        return [self.appSettingsService updateSettings:task.result];
     }] continueWithExecutor:self.completionExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.isFaulted) {
             if (task.error) {
@@ -122,12 +122,12 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (BFTask *)bft_restoreAuth
+- (BFTask *)restoreAuth
 {
-    return [[[[self.appSettingsService bft_fetchCurrentAppSettings] continueWithSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
+    return [[[[self.appSettingsService fetchCurrentAppSettings] continueWithSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
         _credentials = [DLSAuthCredentials new];
         _credentials.username = task.result.lastLoggedInUsername;
-        return [self bft_loadExistedTokens];
+        return [self loadExistedTokens];
     }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask<NSArray<DLSAccessTokenWrapper *> *> * _Nonnull task) {
         DLSAccessTokenWrapper *const validToken = [Underscore array](task.result).filter(^BOOL (DLSAccessTokenWrapper *token) {
             return token.isValid;
@@ -143,7 +143,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         }
 
         DLSAccessTokenWrapper *const invalidToken = [task.result firstObject];
-        return [self bft_refreshToken:invalidToken];
+        return [self refreshToken:invalidToken];
     }] continueWithExecutor:self.authorizationExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.isFaulted) {
             NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.token.cannotrefresh" code:DLSSouthWorcestershireErrorCodeAuthentication userInfo:@{NSLocalizedDescriptionKey: @"Refresh token operation was finished with errors", NSUnderlyingErrorKey: task.error ?: (task.exception ?: [NSNull null])}];
@@ -155,11 +155,11 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (BFTask *)bft_checkToken
+- (BFTask *)checkToken
 {
     return [[BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
         if (!self.token.isValid) {
-            return [self bft_refreshToken:self.token];
+            return [self refreshToken:self.token];
         } else {
             return self.token;
         }
@@ -174,11 +174,11 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (BFTask<DLSAccessTokenWrapper *> *)bft_refreshToken:(DLSAccessTokenWrapper *)invalidToken
+- (BFTask<DLSAccessTokenWrapper *> *)refreshToken:(DLSAccessTokenWrapper *)invalidToken
 {
     return [[BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
         id<DLSTransport> const createTransport = self.transports[DLSAuthTokenPathKey];
-        return [createTransport bft_create:@{
+        return [createTransport create:@{
                                              @"grant_type": kDLSAuthRefreshGrantType,
                                              @"refresh_token": invalidToken.refreshToken,
                                              @"client_id": kDLSAuthCliendId,
@@ -205,7 +205,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }];
 }
 
-- (BFTask *)bft_logout
+- (BFTask *)logout
 {
     if (!self.isAuthorized) {
         return [self _successWithResult:nil];
@@ -231,10 +231,10 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
             }
         }
 
-        return [self.appSettingsService bft_fetchCurrentAppSettings];
+        return [self.appSettingsService fetchCurrentAppSettings];
     }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
         [task.result setTermsOfUseAccepted:NO];
-        return [self.appSettingsService bft_updateSettings:task.result];
+        return [self.appSettingsService updateSettings:task.result];
     }] continueWithExecutor:self.completionExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         return nil;
     }];
@@ -242,7 +242,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
 #pragma mark - Helpers
 
-- (BFTask<NSArray<DLSAccessTokenWrapper *> *> *)bft_loadExistedTokens
+- (BFTask<NSArray<DLSAccessTokenWrapper *> *> *)loadExistedTokens
 {
     return [BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
         NSError *error;

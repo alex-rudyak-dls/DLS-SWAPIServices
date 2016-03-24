@@ -15,9 +15,9 @@
 
 @implementation DLSContentTextService
 
-- (BFTask<DLSApplicationContentObject *> *)bft_fetchLastVersionContent
+- (BFTask<DLSApplicationContentObject *> *)fetchLastVersionContent
 {
-    return [[[self.contentTransport bft_fetchAllWithParams:nil] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[self.contentTransport fetchAllWithParams:nil] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSApplicationContentObject *const contentObject = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSApplicationContentObject objectMapping]];
         NSError *serializationError = nil;
         contentObject.content = [NSJSONSerialization dataWithJSONObject:task.result options:NSJSONWritingPrettyPrinted error:&serializationError];
@@ -36,14 +36,14 @@
     }];
 }
 
-- (BFTask<NSNumber *> *)bft_checkLatestVersion
+- (BFTask<NSNumber *> *)checkLatestVersion
 {
-    return [[[[self.versionTransport bft_fetchAllWithParams:nil] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[[self.versionTransport fetchAllWithParams:nil] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSApplicationContentObject *const contentObject = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSApplicationContentObject objectMapping]];
 
         return [BFTask taskForCompletionOfAllTasksWithResults:@[
                                                                 [BFTask taskWithResult:contentObject],
-                                                                [self.appSettingsService bft_fetchCurrentAppSettings]
+                                                                [self.appSettingsService fetchCurrentAppSettings]
                                                                 ]];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask<NSArray *> * _Nonnull task) {
         DLSApplicationContentObject *const contentObject = task.result.firstObject;

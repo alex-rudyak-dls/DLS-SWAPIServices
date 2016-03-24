@@ -32,9 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Public methods
 
-- (BFTask<NSArray *> *)bft_fetchAll;
+- (BFTask<NSArray *> *)fetchAll;
 
-- (BFTask<id> *)bft_fetchById:(id)identifier;
+- (BFTask<id> *)fetchById:(id)identifier;
 
 @end
 

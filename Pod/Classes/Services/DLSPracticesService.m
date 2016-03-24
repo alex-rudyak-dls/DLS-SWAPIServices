@@ -19,49 +19,49 @@
 
 @implementation DLSPracticesService
 
-- (BFTask *)bft_fetchAll
+- (BFTask *)fetchAll
 {
-    return [[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        return [self bft_fetchPracticesSorted:DLSPracticesListSortDefault];
+    return [[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self fetchPracticesSorted:DLSPracticesListSortDefault];
     }];
 }
 
-- (BFTask *)bft_fetchById:(id)identifier
+- (BFTask *)fetchById:(id)identifier
 {
-    return [[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        return [self bft_fetchById:identifier withWrappersFactory:[DLSPracticeWrapperAbstractFactory new]];
+    return [[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self fetchById:identifier withWrappersFactory:[DLSPracticeWrapperAbstractFactory new]];
     }];
 }
 
-- (BFTask<NSArray<DLSPracticeWrapper *> *> *)bft_fetchPracticesSorted:(DLSPracticesListSort)sortKey
+- (BFTask<NSArray<DLSPracticeWrapper *> *> *)fetchPracticesSorted:(DLSPracticesListSort)sortKey
 {
-    return [[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        return [self bft_fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeWrapperAbstractFactory new]];
+    return [[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeWrapperAbstractFactory new]];
     }];
 }
 
-- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)fetchPracticesPreviewSorted:(DLSPracticesListSort)sortKey
 {
-    return [[self.authService bft_checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        return [self bft_fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeShortWrapperAbstractFactory new]];
+    return [[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+        return [self fetchPracticesSorted:sortKey withWrapperFactory:[DLSPracticeShortWrapperAbstractFactory new]];
     }];
 
 }
 
-- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)bft_fetchAllPracticePreviews
+- (BFTask<NSArray<DLSPracticeShortWrapper *> *> *)fetchAllPracticePreviews
 {
-    return [self bft_fetchPracticesPreviewSorted:DLSPracticesListSortDefault];
+    return [self fetchPracticesPreviewSorted:DLSPracticesListSortDefault];
 }
 
 #pragma mark - Helpers
 
-- (BFTask *)bft_fetchById:(id)identifier withWrappersFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
+- (BFTask *)fetchById:(id)identifier withWrappersFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
     return [[[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         [self updateMediumPaths];
         id<DLSTransport> const transport = self.entityTransport;
         [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [transport bft_fetchWithId:identifier];
+        return [transport fetchWithId:identifier];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSPracticeObject *practice = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSPracticeObject objectMapping]];
         return [wrapperFactory practiceWithObject:practice];
@@ -73,13 +73,13 @@
     }];
 }
 
-- (BFTask *)bft_fetchPracticesSorted:(DLSPracticesListSort)sortKey withWrapperFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
+- (BFTask *)fetchPracticesSorted:(DLSPracticesListSort)sortKey withWrapperFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
     return [[[BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
         [self updateMediumPaths];
         id<DLSTransport> const transport = self.listTransport;
         [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
-        return [transport bft_fetchAllWithParams:nil];
+        return [transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSArray<DLSPracticeObject *> * practices = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSPracticeObject objectMapping]];
         practices = [practices sortedArrayUsingDescriptors:@[[self nssortDescriptorForKey:sortKey]]];
@@ -95,14 +95,14 @@
     }];
 }
 
-- (BFTask *)bft_fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub
+- (BFTask *)fetchPracticesPreviewWhichIsOnlyPartOfHub:(BOOL)isOnlyPartOfHub
 {
     const DLSPracticesListSort sortAction = DLSPracticesListSortAlphabetically;
     if (!isOnlyPartOfHub) {
-        return [self bft_fetchPracticesPreviewSorted:sortAction];
+        return [self fetchPracticesPreviewSorted:sortAction];
     }
 
-    return [[self bft_fetchPracticesPreviewSorted:DLSPracticesListSortAlphabetically] continueWithExecutor:self.responseExecutor withSuccessBlock:^id _Nullable(BFTask<NSArray<DLSPracticeShortWrapper *> *> * _Nonnull task) {
+    return [[self fetchPracticesPreviewSorted:DLSPracticesListSortAlphabetically] continueWithExecutor:self.responseExecutor withSuccessBlock:^id _Nullable(BFTask<NSArray<DLSPracticeShortWrapper *> *> * _Nonnull task) {
         return [Underscore array](task.result).filter(^ BOOL(DLSPracticeShortWrapper *practice) {
             return practice.isPartOfHub;
         }).unwrap;

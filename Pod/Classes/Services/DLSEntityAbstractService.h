@@ -38,9 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration NS_DESIGNATED_INITIALIZER;
 
-- (BFTask<NSArray *> *)bft_fetchAll;
+- (BFTask<NSArray *> *)fetchAll;
 
-- (BFTask<id> *)bft_fetchById:(id)identifier;
+- (BFTask<id> *)fetchById:(id)identifier;
 
 @end
 

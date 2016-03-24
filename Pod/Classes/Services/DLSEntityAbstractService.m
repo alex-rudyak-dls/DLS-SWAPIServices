@@ -32,13 +32,13 @@
     return self;
 }
 
-- (BFTask *)bft_fetchAll
+- (BFTask *)fetchAll
 {
     //TODO: implement in siblings
     return [BFTask cancelledTask];
 }
 
-- (BFTask *)bft_fetchById:(id)identifier
+- (BFTask *)fetchById:(id)identifier
 {
     //TODO: implement in siblings
     return [BFTask cancelledTask];

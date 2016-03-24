@@ -73,7 +73,7 @@
 
 #pragma mark - Requests
 
-- (BFTask *)bft_fetchAllWithParams:(nullable NSDictionary<NSString *,id> *)parameters
+- (BFTask *)fetchAllWithParams:(nullable NSDictionary<NSString *,id> *)parameters
 {
     BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
     NSString *const urlPath = [self urlPath];
@@ -93,7 +93,7 @@
     return taskSource.task;
 }
 
-- (BFTask *)bft_fetchWithId:(id)entityIdentifier
+- (BFTask *)fetchWithId:(id)entityIdentifier
 {
     BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
     NSString *const urlPath = [NSString stringWithFormat:@"%@/%@", [self urlPath], entityIdentifier];
@@ -113,7 +113,7 @@
     return taskSource.task;
 }
 
-- (BFTask *)bft_create:(NSDictionary *)entity
+- (BFTask *)create:(NSDictionary *)entity
 {
     NSParameterAssert(entity);
 
@@ -134,7 +134,7 @@
 
 }
 
-- (BFTask *)bft_update:(NSDictionary *)entity id:(id)entityIdentifier
+- (BFTask *)update:(NSDictionary *)entity id:(id)entityIdentifier
 {
     NSParameterAssert(entity);
     NSParameterAssert(entityIdentifier);
@@ -155,7 +155,7 @@
     return taskSource.task;
 }
 
-- (BFTask *)bft_patch:(NSDictionary *)entity id:(id)entityIdentifier
+- (BFTask *)patch:(NSDictionary *)entity id:(id)entityIdentifier
 {
     NSParameterAssert(entity);
     NSParameterAssert(entityIdentifier);
@@ -177,7 +177,7 @@
     return taskSource.task;
 }
 
-- (BFTask *)bft_removeWithId:(id)entityIdentifier
+- (BFTask *)removeWithId:(id)entityIdentifier
 {
     NSParameterAssert(entityIdentifier);
 

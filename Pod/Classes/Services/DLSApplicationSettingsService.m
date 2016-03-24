@@ -22,7 +22,7 @@
 
 @implementation DLSApplicationSettingsService
 
-- (BFTask *)bft_fetchAll
+- (BFTask *)fetchAll
 {
     return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         NSError *error;
@@ -41,7 +41,7 @@
     }];
 }
 
-- (BFTask *)bft_fetchById:(id)identifier
+- (BFTask *)fetchById:(id)identifier
 {
     NSParameterAssert(identifier);
 
@@ -63,12 +63,12 @@
     }];
 }
 
-- (BFTask<DLSApplicationSettingsWrapper *> *)bft_fetchCurrentAppSettings
+- (BFTask<DLSApplicationSettingsWrapper *> *)fetchCurrentAppSettings
 {
-    return [self bft_fetchById:@"south-worcestershire-app"];
+    return [self fetchById:@"south-worcestershire-app"];
 }
 
-- (BFTask<DLSApplicationSettingsWrapper *> *)bft_updateSettings:(DLSApplicationSettingsWrapper *)appSettings
+- (BFTask<DLSApplicationSettingsWrapper *> *)updateSettings:(DLSApplicationSettingsWrapper *)appSettings
 {
     NSParameterAssert(appSettings);
 
