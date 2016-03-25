@@ -12,25 +12,27 @@
 #import "DLSOrganisationObject.h"
 #import "DLSOrganisationWrapper.h"
 #import "DLSAuthenticationService.h"
+#import "DLSAccessTokenWrapper.h"
 
 
 @implementation DLSOrganisationsService
 
 - (BFTask *)fetchAll
 {
-    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [self.transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSArray<DLSOrganisationObject *> *const organisations = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSOrganisationObject objectMapping]];
         if (!organisations.count) {
-            return [self _successWithResponse:@[]];
+            return @[];
         }
 
         NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         [realm beginWriteTransaction];
@@ -42,29 +44,25 @@
         }).unwrap;
 
         return wrappers;
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
     }];
 }
 
 - (BFTask *)fetchById:(id)identifier
 {
-    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [self.transport fetchWithId:identifier];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSOrganisationObject *const organisation = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSOrganisationObject objectMapping]];
         if (!organisation) {
-            return [self _successWithResponse:@[]];
+            return @[];
         }
 
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         [realm beginWriteTransaction];
@@ -72,12 +70,8 @@
         [realm commitWriteTransaction];
 
         DLSOrganisationWrapper *const wrapper = [DLSOrganisationWrapper organisationWithObject:organisation];
+
         return wrapper;
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
     }];
 }
 

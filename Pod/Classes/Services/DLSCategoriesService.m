@@ -10,20 +10,21 @@
 #import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiConstants.h"
+#import "DLSAuthenticationService.h"
 #import "DLSCategoryObject.h"
 #import "DLSCategoryWrapper.h"
-#import "DLSAuthenticationService.h"
+#import "DLSAccessTokenWrapper.h"
 
 
 @implementation DLSCategoriesService
 
 - (BFTask *)fetchAll
 {
-    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         RLMResults *const categories = [DLSCategoryObject allObjectsInRealm:realm];
@@ -32,22 +33,24 @@
             for (DLSCategoryObject *category in categories) {
                 [categoriesWrappers addObject:[DLSCategoryWrapper categoryWithObject:category]];
             }
-            return [self _successWithResponse:[NSArray arrayWithArray:categoriesWrappers]];
+
+            return [NSArray arrayWithArray:categoriesWrappers];
         }
 
         [self updateMediumPaths];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [self.transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSArray<DLSCategoryObject *> *const categories = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSCategoryObject objectMapping]];
         if (!categories.count) {
-            return [self _successWithResponse:@[]];
+            return @[];
         }
 
         NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         [realm beginWriteTransaction];
@@ -56,13 +59,10 @@
 
         NSArray<DLSCategoryWrapper *> *const wrappers = [Underscore array](categories).map(^(DLSCategoryObject *category) {
             return [DLSCategoryWrapper categoryWithObject:category];
+
         }).unwrap;
+
         return wrappers;
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
     }];
 }
 

@@ -10,8 +10,10 @@
 #import "DLSAuthenticationService.h"
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiErrors.h"
+#import "DLSAuthCredentials.h"
 #import "DLSUserProfileObject.h"
 #import "DLSUserProfileWrapper.h"
+#import "DLSAccessTokenWrapper.h"
 
 
 @implementation DLSUserProfileService
@@ -24,24 +26,26 @@
     }
 
     NSString *const userId = self.authService.credentials.username;
-    return [[[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (!error) {
             DLSUserProfileObject *const user = [DLSUserProfileObject objectInRealm:realm forPrimaryKey:userId];
             if (user) {
                 DLSUserProfileWrapper *const wrapper = [DLSUserProfileWrapper userWithObject:user];
-                return [self _successWithResponse:wrapper];
+
+                return wrapper;
             }
         }
 
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [self.transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         DLSUserProfileObject *const userProfile = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSUserProfileObject objectMapping]];
@@ -55,22 +59,18 @@
         }
 
         DLSUserProfileWrapper *const wrapper = [DLSUserProfileWrapper userWithObject:userProfile];
+
         return wrapper;
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
     }];
 }
 
 - (BFTask<DLSUserProfileWrapper *> *)updateUserProfile:(DLSUserProfileWrapper *)userProfile
 {
-    return [[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
+    return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         @try {
@@ -82,12 +82,7 @@
             [realm cancelWriteTransaction];
         }
 
-        return [self _successWithResponse:userProfile];
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
+        return userProfile;
     }];
 }
 

@@ -13,5 +13,6 @@
 @interface DLSEntityServiceConfiguration : NSObject <DLSServiceConfiguration>
 
 @property (nonatomic, weak) DLSAuthenticationService *authService;
+@property (nonatomic, copy, readonly) RLMRealmConfiguration *realmConfiguration;
 
 @end

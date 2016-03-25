@@ -7,17 +7,12 @@
 //
 
 #import "DLSApplicationSettingsService.h"
-#import "DLSEntityAbstractService_Private.h"
 #import <Realm/Realm.h>
 #import <ITDispatchManagement/ITDispatchManagement.h>
+#import "DLSEntityAbstractService_Private.h"
 #import "DLSApplicationSettingsObject.h"
 #import "DLSApplicationSettingsWrapper.h"
 #import "DLSAppPaths.h"
-
-
-@interface DLSApplicationSettingsService ()
-
-@end
 
 
 @implementation DLSApplicationSettingsService
@@ -26,18 +21,18 @@
 {
     return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
-        RLMResults *appSettings = [DLSApplicationSettingsObject allObjectsInRealm:realm];
-        NSMutableArray *appSettingsWrappers = [NSMutableArray arrayWithCapacity:appSettings.count];
+        RLMResults *const appSettings = [DLSApplicationSettingsObject allObjectsInRealm:realm];
+        NSMutableArray *const appSettingsWrappers = [NSMutableArray arrayWithCapacity:appSettings.count];
         for (DLSApplicationSettingsObject *obj in appSettings) {
             [appSettingsWrappers addObject:[DLSApplicationSettingsWrapper appSettingsWithObject:obj]];
         }
 
-        return [self _successWithResponse:[NSArray arrayWithArray:appSettingsWrappers]];
+        return [NSArray arrayWithArray:appSettingsWrappers];
     }];
 }
 
@@ -47,9 +42,9 @@
 
     return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         DLSApplicationSettingsObject *appSettings = [DLSApplicationSettingsObject objectInRealm:realm forPrimaryKey:identifier];
@@ -57,9 +52,9 @@
             appSettings = [DLSApplicationSettingsObject new];
             appSettings.appId = identifier;
         }
-        DLSApplicationSettingsWrapper *const appSettingsWrapper = [DLSApplicationSettingsWrapper appSettingsWithObject:appSettings];
 
-        return [self _successWithResponse:appSettingsWrapper];
+        DLSApplicationSettingsWrapper *const appSettingsWrapper = [DLSApplicationSettingsWrapper appSettingsWithObject:appSettings];
+        return appSettingsWrapper;
     }];
 }
 
@@ -74,16 +69,16 @@
 
     return [BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error inMethod:_cmd];
+            return [BFTask taskWithError:error];
         }
 
         [realm beginWriteTransaction];
         [realm addOrUpdateObject:[appSettings appObject]];
         [realm commitWriteTransaction];
 
-        return [self _successWithResponse:appSettings];
+        return appSettings;
     }];
 }
 

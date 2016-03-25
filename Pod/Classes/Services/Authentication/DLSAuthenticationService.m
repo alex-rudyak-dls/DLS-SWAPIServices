@@ -12,10 +12,17 @@
 #import "DLSPrivateHeader.h"
 #import "DLSApiErrors.h"
 #import "DLSApiConstants.h"
+#import "DLSUserProfileService.h"
+#import "DLSApplicationSettingsService.h"
+#import "DLSConfigurable.h"
+#import "DLSRealmFactory.h"
 #import "DLSAccessTokenWrapper.h"
 #import "DLSUserProfileObject.h"
 #import "DLSUserProfileWrapper.h"
 #import "DLSApplicationSettingsWrapper.h"
+#import "DLSAuthCredentials.h"
+#import "DLSAccessTokenWrapper.h"
+#import "DLSServiceConfiguration.h"
 
 
 NSString *const DLSAuthTokenPathKey = @"token";
@@ -28,12 +35,13 @@ static NSString *const kDLSAuthGrantType = @"password";
 static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
 
-@interface DLSAuthenticationService ()
+@interface DLSAuthenticationService () <DLSConfigurable>
 
 @property (nonatomic, strong) DLSAccessTokenWrapper *token;
 @property (nonatomic, strong) dispatch_queue_t authorizationQueue;
 @property (nonatomic, strong) BFExecutor *authorizationExecutor;
 @property (nonatomic, strong) BFExecutor *completionExecutor;
+@property (nonatomic, strong) id<DLSConfigurable> configurableWrapper;
 
 @end
 
@@ -48,9 +56,10 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     self = [super init];
     if (self) {
         _serviceConfiguration = configuration;
-        self.authorizationQueue = dispatch_queue_create("uk.co.digitallifesciences.AuthService", DISPATCH_QUEUE_SERIAL);
-        self.authorizationExecutor = [BFExecutor executorWithDispatchQueue:self.authorizationQueue];
-        self.completionExecutor = [BFExecutor defaultExecutor];
+        _configurableWrapper = [[DLSRealmFactory alloc] initWithConfiguration:configuration];
+        _authorizationQueue = dispatch_queue_create("uk.co.digitallifesciences.AuthService", DISPATCH_QUEUE_SERIAL);
+        _authorizationExecutor = [BFExecutor executorWithDispatchQueue:self.authorizationQueue];
+        _completionExecutor = [BFExecutor defaultExecutor];
     }
     return self;
 }
@@ -68,6 +77,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
     if (credentials.username.length == 0 || credentials.password.length == 0) {
         NSError *const error = [NSError errorWithDomainPostfix:@"auth.credentials" code:DLSSouthWorcestershireErrorCodeAuthentication userInfo:@{ NSLocalizedDescriptionKey : @"Username or password are empty." }];
+
         return [BFTask taskWithError:error];
     }
 
@@ -85,9 +95,9 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         self.token = [DLSAccessTokenWrapper tokenWithObject:token];
 
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error];
+            return [BFTask taskWithError:error];
         }
 
         [realm beginWriteTransaction];
@@ -98,8 +108,9 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
         task.result.lastLoggedInUsername = self.credentials.username;
         task.result.lastStartupDate = [NSDate date];
+
         return [self.appSettingsService updateSettings:task.result];
-    }] continueWithExecutor:self.completionExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
+    }] continueWithExecutor:self.authorizationExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.isFaulted) {
             if (task.error) {
                 DDLogDebug(@"[AuthService:Authentication:error] %@", [task.error localizedDescription]);
@@ -109,11 +120,13 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
             NSException *const exceptionObj = task.exception;
             if (exceptionObj) {
-                NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.exception" code:DLSSouthWorcestershireErrorCodeUnknown userInfo:@{NSLocalizedDescriptionKey: @"Something goes wrong with data received from server. Please try again a bit later.", NSUnderlyingErrorKey: task.error}];
-                return [self _failWithError:domainError];
+                NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.exception" code:DLSSouthWorcestershireErrorCodeUnknown userInfo:@{ NSLocalizedDescriptionKey: @"Something goes wrong with data received from server. Please try again a bit later.", NSUnderlyingErrorKey: task.error }];
+
+                return [BFTask taskWithError:domainError];
             } else if (task.error) {
-                NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.error" code:DLSSouthWorcestershireErrorCodeAuthentication userInfo:@{}];
-                return [self _failWithError:domainError];
+                NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.error" code:DLSSouthWorcestershireErrorCodeAuthentication userInfo:@{ NSLocalizedDescriptionKey: task.error.localizedDescription, NSUnderlyingErrorKey: task.error }];
+
+                return [BFTask taskWithError:domainError];
             }
         } else if (task.isCancelled) {
             return [BFTask cancelledTask];
@@ -134,20 +147,24 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         }).first;
         if (validToken) {
             self.token = validToken;
+
             return nil;
         }
 
         if (!task.result.count) {
             NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.token.notfound" code:DLSSouthWorcestershireErrorCodeAuthentication userInfo:@{NSLocalizedDescriptionKey: @"No valid token found"}];
-            return [self _failWithError:domainError];
+
+            return [BFTask taskWithError:domainError];
         }
 
         DLSAccessTokenWrapper *const invalidToken = [task.result firstObject];
+
         return [self refreshToken:invalidToken];
     }] continueWithExecutor:self.authorizationExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.isFaulted) {
             NSError *const domainError = [NSError errorWithDomainPostfix:@"auth.token.cannotrefresh" code:DLSSouthWorcestershireErrorCodeAuthentication userInfo:@{NSLocalizedDescriptionKey: @"Refresh token operation was finished with errors", NSUnderlyingErrorKey: task.error ?: (task.exception ?: [NSNull null])}];
-            return [self _failWithError:domainError];
+
+            return [BFTask taskWithError:domainError];
         } else if (task.isCancelled) {
             return [BFTask cancelledTask];
         }
@@ -165,12 +182,12 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         }
     }] continueWithExecutor:self.authorizationExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
         if (task.result) {
-            return [self _successWithResult:nil];
+            return nil;
         }
 
         NSError *const domainError = [NSError errorUnauthorizedAccessWithInfo:@{NSLocalizedDescriptionKey: @"Token is invalid to use", NSUnderlyingErrorKey: task.error ?: task.exception ?: [NSNull null]}];
 
-        return [self _failWithError:domainError];
+        return [BFTask taskWithError:domainError];
     }];
 }
 
@@ -178,6 +195,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 {
     return [[BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
         id<DLSTransport> const createTransport = self.transports[DLSAuthTokenPathKey];
+
         return [createTransport create:@{
                                              @"grant_type": kDLSAuthRefreshGrantType,
                                              @"refresh_token": invalidToken.refreshToken,
@@ -188,7 +206,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         DLSAccessTokenObject *const token = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAccessTokenObject objectMapping]];
 
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
             return [BFTask taskWithError:error];
         }
@@ -208,15 +226,15 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 - (BFTask *)logout
 {
     if (!self.isAuthorized) {
-        return [self _successWithResult:nil];
+        return nil;
     }
 
     self.token = nil;
     return [[[BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
-            return [self _failWithError:error];
+            return [BFTask taskWithError:error];
         }
 
         RLMResults *const tokenObjs = [DLSAccessTokenObject allObjectsInRealm:realm];
@@ -234,8 +252,9 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         return [self.appSettingsService fetchCurrentAppSettings];
     }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask<DLSApplicationSettingsWrapper *> * _Nonnull task) {
         [task.result setTermsOfUseAccepted:NO];
+
         return [self.appSettingsService updateSettings:task.result];
-    }] continueWithExecutor:self.completionExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         return nil;
     }];
 }
@@ -246,7 +265,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 {
     return [BFTask taskFromExecutor:self.authorizationExecutor withBlock:^id _Nonnull{
         NSError *error;
-        RLMRealm *const realm = [RLMRealm realmWithConfiguration:self.serviceConfiguration.realmConfiguration error:&error];
+        RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
             return [BFTask taskWithError:error];
         }
@@ -257,45 +276,13 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
             [arrayTokens addObject:[DLSAccessTokenWrapper tokenWithObject:obj]];
         }
 
-        return [BFTask taskWithResult:[NSArray arrayWithArray:arrayTokens]];
+        return [NSArray arrayWithArray:arrayTokens];
     }];
 }
 
-- (BFTask *)_failWithError:(NSError *)error
+- (RLMRealm *)realmInstance:(NSError *__autoreleasing *)error
 {
-    return [BFTask taskFromExecutor:self.completionExecutor withBlock:^id _Nonnull{
-        return [BFTask taskWithError:error];
-    }];
-}
-
-- (BFTask *)_successWithResult:(id)result
-{
-    return [BFTask taskFromExecutor:self.completionExecutor withBlock:^id _Nonnull{
-        return [BFTask taskWithResult:result];
-    }];
-}
-
-@end
-
-
-@implementation DLSAuthCredentials
-
-- (instancetype)initWithCompletion:(void (^)(DLSAuthCredentials *))completion
-{
-    self = [super init];
-    if (self && completion) {
-        completion(self);
-    }
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    DLSAuthCredentials *copyInstance = [[DLSAuthCredentials alloc] initWithCompletion:^(DLSAuthCredentials *credentials) {
-        credentials.username = [self.username copy];
-        credentials.password = [self.password copy];
-    }];
-    return copyInstance;
+    return [self.configurableWrapper realmInstance:error];
 }
 
 @end

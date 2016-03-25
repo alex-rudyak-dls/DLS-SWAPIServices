@@ -6,7 +6,6 @@
 //  Copyright © 2015 Digital Life Science. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <Bolts/BFTask.h>
 #import "DLSEntityAbstractService.h"
 

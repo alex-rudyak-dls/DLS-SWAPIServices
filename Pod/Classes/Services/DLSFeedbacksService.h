@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BFTask<DLSFeedbackObject *> *)fetchById:(id)identifier;
 
-- (BFTask *)sendFeedback:(id)feedback;
+- (BFTask *)sendFeedback:(DLSFeedbackObject *)feedback;
 
 @end
 

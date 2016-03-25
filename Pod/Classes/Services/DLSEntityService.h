@@ -11,17 +11,15 @@
 #import "DLSEntityParser.h"
 #import "DLSTransport.h"
 #import "DLSServiceConfiguration.h"
+#import "DLSConfigurable.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class DLSAuthenticationService;
 
-@protocol DLSEntityService <NSObject>
+@protocol DLSEntityService <DLSConfigurable>
 
 @required
-
-@property (nonatomic, readonly) id<DLSServiceConfiguration> serviceConfiguration;
-
 @property (nonatomic, strong) id<DLSEntityParser> parser;
 @property (nonatomic, strong) id<DLSTransport> transport;
 @property (nonatomic, weak) DLSAuthenticationService *authService;

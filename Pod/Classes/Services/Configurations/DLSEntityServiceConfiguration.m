@@ -14,9 +14,11 @@
 #import "DLSUserProfileObject.h"
 #import "DLSCategoryObject.h"
 #import "DLSPracticeObject.h"
+#import "DLSAuthCredentials.h"
 
 
 @implementation DLSEntityServiceConfiguration
+@dynamic realmConfiguration;
 
 - (RLMRealmConfiguration *)realmConfiguration
 {

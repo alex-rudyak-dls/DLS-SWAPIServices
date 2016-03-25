@@ -10,11 +10,12 @@
 #import <Underscore.m/Underscore.h>
 #import "DLSEntityAbstractService_Private.h"
 #import "DLSApiConstants.h"
+#import "DLSAuthenticationService.h"
 #import "DLSPracticeObject.h"
 #import "DLSPracticeWrapper.h"
 #import "DLSPracticeShortWrapper.h"
 #import "DLSPracticeWrapperFactory.h"
-#import "DLSAuthenticationService.h"
+#import "DLSAccessTokenWrapper.h"
 
 
 @implementation DLSPracticesService
@@ -57,41 +58,35 @@
 
 - (BFTask *)fetchById:(id)identifier withWrappersFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
-    return [[[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
+    return [[BFTask taskFromExecutor:self.fetchExecutor withBlock:^id _Nonnull{
         [self updateMediumPaths];
         id<DLSTransport> const transport = self.entityTransport;
         [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [transport fetchWithId:identifier];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        DLSPracticeObject *practice = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSPracticeObject objectMapping]];
+        DLSPracticeObject *const practice = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSPracticeObject objectMapping]];
+
         return [wrapperFactory practiceWithObject:practice];
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
     }];
 }
 
 - (BFTask *)fetchPracticesSorted:(DLSPracticesListSort)sortKey withWrapperFactory:(id<DLSPracticeWrapperFactory>)wrapperFactory
 {
-    return [[[BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
+    return [[BFTask taskFromExecutor:self.responseExecutor withBlock:^id _Nonnull{
         [self updateMediumPaths];
         id<DLSTransport> const transport = self.listTransport;
         [transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [transport fetchAllWithParams:nil];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        NSArray<DLSPracticeObject *> * practices = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSPracticeObject objectMapping]];
+        NSArray<DLSPracticeObject *> *practices = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSPracticeObject objectMapping]];
         practices = [practices sortedArrayUsingDescriptors:@[[self nssortDescriptorForKey:sortKey]]];
         NSArray<DLSPracticeWrapper *> *const wrappers = [Underscore array](practices).map(^(DLSPracticeObject *practice) {
             return [wrapperFactory practiceWithObject:practice];
         }).unwrap;
+
         return wrappers;
-    }] continueWithExecutor:self.responseExecutor withBlock:^id _Nullable(BFTask * _Nonnull task) {
-        if (task.isFaulted || task.isCancelled) {
-            return [self _failOfTask:task inMethod:_cmd];
-        }
-        return [self _successWithResponse:task.result];
     }];
 }
 

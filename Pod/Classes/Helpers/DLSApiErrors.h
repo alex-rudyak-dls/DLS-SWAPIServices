@@ -15,7 +15,8 @@ OBJC_EXTERN NSString *const DLSSouthWorcestershireErrorDomain;
 typedef NS_ENUM(NSUInteger, DLSSouthWorcestershireErrorCode) {
     DLSSouthWorcestershireErrorCodeUnknown,
     DLSSouthWorcestershireErrorCodeAuthentication,
-    DLSSouthWorcestershireErrorCodeSerialization
+    DLSSouthWorcestershireErrorCodeSerialization,
+    DLSSouthWorcestershireErrorCodePersistence
 };
 
 

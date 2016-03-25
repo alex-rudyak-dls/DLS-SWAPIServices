@@ -26,12 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong) dispatch_queue_t fetchQueue;
 
-/**
- *  Describes on which queue response will be returned to user.
- *  Default: background queue with default priority
- */
-@property (nonatomic, strong) dispatch_queue_t responseQueue;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype) new NS_UNAVAILABLE;

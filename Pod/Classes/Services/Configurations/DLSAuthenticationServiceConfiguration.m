@@ -10,6 +10,7 @@
 #import "DLSAccessTokenObject.h"
 #import "DLSUserProfileObject.h"
 #import "DLSAuthenticationService.h"
+#import "DLSAuthCredentials.h"
 
 
 @implementation DLSAuthenticationServiceConfiguration

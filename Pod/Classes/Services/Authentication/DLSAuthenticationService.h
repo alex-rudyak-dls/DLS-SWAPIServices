@@ -9,10 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <Bolts/BFTask.h>
 #import "DLSTransport.h"
-#import "DLSAccessTokenWrapper.h"
-#import "DLSServiceConfiguration.h"
-#import "DLSUserProfileService.h"
-#import "DLSApplicationSettingsService.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,6 +16,10 @@ OBJC_EXTERN NSString *const DLSAuthTokenPathKey;
 OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 
 @class DLSAuthCredentials;
+@class DLSAccessTokenWrapper;
+@protocol DLSServiceConfiguration;
+@protocol DLSUserProfileService;
+@protocol DLSApplicationSettingsService;
 
 @interface DLSAuthenticationService : NSObject
 
@@ -45,16 +45,6 @@ OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 - (BFTask *)checkToken;
 
 - (BFTask *)logout;
-
-@end
-
-
-@interface DLSAuthCredentials : NSObject <NSCopying>
-
-@property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSString *password;
-
-- (instancetype)initWithCompletion:(nullable void (^)(DLSAuthCredentials *credentials))completion;
 
 @end
 

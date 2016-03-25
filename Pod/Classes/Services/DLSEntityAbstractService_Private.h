@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Bolts/BFTask.h>
 #import "DLSEntityAbstractService.h"
 
-@class BFTask;
+@class RLMRealm;
 @class BFExecutor;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,20 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) BFExecutor *fetchExecutor;
 @property (nonatomic, strong, readonly) BFExecutor *responseExecutor;
+@property (nonatomic, strong) dispatch_queue_t responseQueue;
 
-- (BFTask *)_failWithError:(NSError *)error;
+@property (nonatomic, strong, readonly) id<DLSConfigurable> configurableWrapper;
 
-- (BFTask *)_failWithError:(NSError *)error inMethod:(SEL)methodSelector;
-
-- (BFTask *)_failWithException:(NSException *)exception;
-
-- (BFTask *)_failWithException:(NSException *)exception inMethod:(SEL)methodSelector;
-
-- (BFTask *)_failOfTask:(BFTask *)superTask;
-
-- (BFTask *)_failOfTask:(BFTask *)superTask inMethod:(SEL)methodSelector;
-
-- (BFTask *)_successWithResponse:(nullable id)response;
+- (BFContinuationBlock)_continueToCompleteBlock;
 
 @end
 
