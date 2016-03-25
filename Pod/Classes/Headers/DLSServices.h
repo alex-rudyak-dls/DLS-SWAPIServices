@@ -12,6 +12,8 @@
 #import "DLSTransport.h"
 #import "DLSHttpNetworkTransport.h"
 
+#import "DLSAuthCredentials.h"
+
 #import "DLSServiceConfiguration.h"
 #import "DLSApplicationSettingsServiceConfiguration.h"
 #import "DLSAuthenticationServiceConfiguration.h"
