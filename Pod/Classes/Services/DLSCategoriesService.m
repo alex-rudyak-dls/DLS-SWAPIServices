@@ -20,7 +20,7 @@
 
 - (BFTask *)fetchAll
 {
-    return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+    return [[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSError *error;
         RLMRealm *const realm = [self realmInstance:&error];
         if (error) {
@@ -40,29 +40,29 @@
         [self updateMediumPaths];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
 
-        return [self.transport fetchAllWithParams:nil];
-    }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        NSArray<DLSCategoryObject *> *const categories = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSCategoryObject objectMapping]];
-        if (!categories.count) {
-            return @[];
-        }
+        return [[self.transport fetchAllWithParams:nil] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
+            NSArray<DLSCategoryObject *> *const categories = [EKMapper arrayOfObjectsFromExternalRepresentation:task.result withMapping:[DLSCategoryObject objectMapping]];
+            if (!categories.count) {
+                return @[];
+            }
 
-        NSError *error;
-        RLMRealm *const realm = [self realmInstance:&error];
-        if (error) {
-            return [BFTask taskWithError:error];
-        }
+            NSError *error;
+            RLMRealm *const realm = [self realmInstance:&error];
+            if (error) {
+                return [BFTask taskWithError:error];
+            }
 
-        [realm beginWriteTransaction];
-        [realm addOrUpdateObjectsFromArray:categories];
-        [realm commitWriteTransaction];
+            [realm beginWriteTransaction];
+            [realm addOrUpdateObjectsFromArray:categories];
+            [realm commitWriteTransaction];
 
-        NSArray<DLSCategoryWrapper *> *const wrappers = [Underscore array](categories).map(^(DLSCategoryObject *category) {
-            return [DLSCategoryWrapper categoryWithObject:category];
-
-        }).unwrap;
-
-        return wrappers;
+            NSArray<DLSCategoryWrapper *> *const wrappers = [Underscore array](categories).map(^(DLSCategoryObject *category) {
+                return [DLSCategoryWrapper categoryWithObject:category];
+                
+            }).unwrap;
+            
+            return wrappers;
+        }];
     }];
 }
 

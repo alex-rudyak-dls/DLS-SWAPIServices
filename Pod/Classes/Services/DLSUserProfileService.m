@@ -27,17 +27,6 @@
 
     NSString *const userId = self.authService.credentials.username;
     return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
-        NSError *error;
-        RLMRealm *const realm = [self realmInstance:&error];
-        if (!error) {
-            DLSUserProfileObject *const user = [DLSUserProfileObject objectInRealm:realm forPrimaryKey:userId];
-            if (user) {
-                DLSUserProfileWrapper *const wrapper = [DLSUserProfileWrapper userWithObject:user];
-
-                return wrapper;
-            }
-        }
-
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
 
         return [self.transport fetchAllWithParams:nil];
