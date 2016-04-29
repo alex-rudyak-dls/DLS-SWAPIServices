@@ -85,6 +85,8 @@
             [self.transport appendPathForOneRequest:@"open"];
         }
 
+        [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+
         return [self.transport fetchAllWithParams:@{
                                                     @"cat_id": self.categoryId,
                                                     @"minor_ailments": @((BOOL)(filterKey & DLSServiceDirectoryFiltrationMinorAilment)),
