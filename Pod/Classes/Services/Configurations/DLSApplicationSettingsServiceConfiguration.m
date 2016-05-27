@@ -17,6 +17,12 @@
     RLMRealmConfiguration *realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
     realmConfiguration.path = DLSUserDirectoryWithFilename(@"app_default.realm");
     realmConfiguration.objectClasses = @[ [DLSApplicationSettingsObject class] ];
+    realmConfiguration.schemaVersion = 1;
+    realmConfiguration.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
+        if (oldSchemaVersion < 1) {
+
+        }
+    };
     return realmConfiguration;
 }
 
