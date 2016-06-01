@@ -11,6 +11,11 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Requirements
 
+### Migrate database to an updated scheme
+- check if there is a model(-s) that was changed (properties added/removed, changed types and name, and so forth)
+- then increment scheme version to separate different database sctructures
+- that’s it ;)
+
 ## Installation
 
 DLS-SWAPIServices is available through [CocoaPods](http://cocoapods.org). To install
