@@ -36,7 +36,7 @@
         [DLSCategoryObject class],
         [DLSPracticeObject class]
     ];
-    realmConfiguration.schemaVersion = 1;
+    realmConfiguration.schemaVersion = DLSRealmSchemeVersion;
     realmConfiguration.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
         if (oldSchemaVersion < 1) {
 

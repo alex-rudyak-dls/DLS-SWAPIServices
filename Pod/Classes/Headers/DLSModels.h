@@ -9,6 +9,8 @@
 #ifndef DLSModels_h
 #define DLSModels_h
 
+OBJC_IMPORT NSInteger DLSRealmSchemeVersion;
+
 #import "DLSAccessTokenWrapper.h"
 #import "DLSApplicationSettingsWrapper.h"
 #import "DLSCategoryWrapper.h"

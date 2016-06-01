@@ -23,7 +23,7 @@
     NSString *const filename = [NSString stringWithFormat:@"%@_instance.realm", credentials.username.lowercaseString];
     realmConfiguration.path = DLSUserDirectoryWithFilename(filename);
     realmConfiguration.objectClasses = @[ [DLSAccessTokenObject class], [DLSUserProfileObject class] ];
-    realmConfiguration.schemaVersion = 1;
+    realmConfiguration.schemaVersion = DLSRealmSchemeVersion;
     realmConfiguration.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
         if (oldSchemaVersion < 1) {
 

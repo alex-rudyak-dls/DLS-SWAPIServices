@@ -14,4 +14,6 @@ OBJC_EXPORT NSString *DLSUserDirectory();
 
 OBJC_EXPORT NSString *DLSUserDirectoryWithFilename(NSString *filename);
 
+OBJC_EXPORT NSInteger DLSRealmSchemeVersion;
+
 NS_ASSUME_NONNULL_END
