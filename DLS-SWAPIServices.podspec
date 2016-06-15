@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
 
 # s.public_header_files = 'Pod/Classes/Headers/*.h'
     s.frameworks = 'Foundation'
-    s.dependency 'Realm', '0.96.3'
+    s.dependency 'Realm', '1.0.1'
     s.dependency 'AFNetworking', '~> 2'
     s.dependency 'CocoaLumberjack', '~> 2.2.0'
     s.dependency 'EasyMapping', '0.15.4'

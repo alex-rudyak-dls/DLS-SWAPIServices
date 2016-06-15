@@ -25,7 +25,7 @@
     DLSAuthCredentials *credentials = self.authService.credentials;
     RLMRealmConfiguration *realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
     NSString *const filename = [NSString stringWithFormat:@"%@_instance.realm", credentials.username.lowercaseString];
-    realmConfiguration.path = DLSUserDirectoryWithFilename(filename);
+    realmConfiguration.fileURL = [NSURL fileURLWithPath:DLSUserDirectoryWithFilename(filename)];
     realmConfiguration.objectClasses = @[
         [DLSLocationObject class],
         [DLSDirectoryServiceObject class],
