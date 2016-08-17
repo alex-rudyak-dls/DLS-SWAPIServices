@@ -38,7 +38,7 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 - (instancetype)initWithClientId:(NSString *)aClientId clientSecret:(NSString *)aClientSecret
 {
     self = [super init];
-    if (!self) {
+    if (self) {
         _clientId = aClientId;
         _clientSecret = aClientSecret;
     }
