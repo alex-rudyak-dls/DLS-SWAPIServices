@@ -29,15 +29,28 @@ NSString *const DLSAuthTokenPathKey = @"token";
 NSString *const DLSAuthLogoutPathKey = @"logout";
 
 static NSString *const kDLSAuthScope = @"openid";
-static NSString *const kDLSAuthCliendId = @"sw";
-static NSString *const kDLSAuthClientSecret = @"m8qc9n16pdwkgwc4kg44cs0w4wsss8w";
 static NSString *const kDLSAuthGrantType = @"password";
 static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
 
+@implementation DLSOAuthConfiguration
+
+- (instancetype)initWithClientId:(NSString *)aClientId clientSecret:(NSString *)aClientSecret
+{
+    self = [super init];
+    if (!self) {
+        _clientId = aClientId;
+        _clientSecret = aClientSecret;
+    }
+    return self;
+}
+
+@end
+
 @interface DLSAuthenticationService () <DLSConfigurable>
 
 @property (nonatomic, strong) DLSAccessTokenWrapper *token;
+@property (nonatomic, strong) DLSOAuthConfiguration *oauthConfiguration;
 @property (nonatomic, strong) dispatch_queue_t authorizationQueue;
 @property (nonatomic, strong) BFExecutor *authorizationExecutor;
 @property (nonatomic, strong) BFExecutor *completionExecutor;
@@ -51,15 +64,17 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
 
 #pragma mark Accessors
 
-- (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration
+- (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration oauth:(DLSOAuthConfiguration *)anOAuthConfiguration
 {
     self = [super init];
     if (self) {
         _serviceConfiguration = configuration;
+        _oauthConfiguration = anOAuthConfiguration;
         _configurableWrapper = [[DLSRealmFactory alloc] initWithConfiguration:configuration];
         _authorizationQueue = dispatch_queue_create("uk.co.digitallifesciences.AuthService", DISPATCH_QUEUE_SERIAL);
         _authorizationExecutor = [BFExecutor executorWithDispatchQueue:self.authorizationQueue];
         _completionExecutor = [BFExecutor defaultExecutor];
+
     }
     return self;
 }
@@ -86,8 +101,8 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
     return [[[[authorizeTransport create:@{
                                                @"grant_type" : kDLSAuthGrantType,
                                                @"scope" : kDLSAuthScope,
-                                               @"client_id" : kDLSAuthCliendId,
-                                               @"client_secret" : kDLSAuthClientSecret,
+                                               @"client_id" : self.oauthConfiguration.clientId,
+                                               @"client_secret" : self.oauthConfiguration.clientSecret,
                                                @"username" : self.credentials.username,
                                                @"password" : self.credentials.password
                                                }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
@@ -199,8 +214,8 @@ static NSString *const kDLSAuthRefreshGrantType = @"refresh_token";
         return [createTransport create:@{
                                              @"grant_type": kDLSAuthRefreshGrantType,
                                              @"refresh_token": invalidToken.refreshToken,
-                                             @"client_id": kDLSAuthCliendId,
-                                             @"client_secret": kDLSAuthClientSecret
+                                             @"client_id": self.oauthConfiguration.clientId,
+                                             @"client_secret": self.oauthConfiguration.clientSecret
                                              }];
     }] continueWithExecutor:self.authorizationExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSAccessTokenObject *const token = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAccessTokenObject objectMapping]];

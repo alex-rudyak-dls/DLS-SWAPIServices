@@ -21,6 +21,19 @@ OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 @protocol DLSUserProfileService;
 @protocol DLSApplicationSettingsService;
 
+
+@interface DLSOAuthConfiguration : NSObject
+
+@property (nonatomic, strong, readonly) NSString *clientId;
+@property (nonatomic, strong, readonly) NSString *clientSecret;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithClientId:(NSString *)aClientId clientSecret:(NSString *)aClientSecret;
+
+@end
+
+
 @interface DLSAuthenticationService : NSObject
 
 @property (nonatomic, weak) id<DLSUserProfileService> userProfileService;
@@ -32,7 +45,7 @@ OBJC_EXTERN NSString *const DLSAuthLogoutPathKey;
 @property (nonatomic, strong) NSDictionary<NSString *, id<DLSTransport>> *transports;
 @property (nullable, nonatomic, readonly) DLSAuthCredentials *credentials;
 
-- (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration:(id<DLSServiceConfiguration>)configuration oauth:(DLSOAuthConfiguration *)anOAuthConfiguration NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
