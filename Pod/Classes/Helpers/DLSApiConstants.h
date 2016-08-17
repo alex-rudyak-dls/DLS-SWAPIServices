@@ -10,11 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-OBJC_EXTERN NSString *const DLSApiRedirectUrlString;
 OBJC_EXTERN NSString *const DLSApiRequestSource;
-
-OBJC_EXTERN NSString *const DLSRestorePasswordUrlString;
-OBJC_EXTERN NSString *const DLSRegisterUrlString;
 
 
 // Authentication routes
