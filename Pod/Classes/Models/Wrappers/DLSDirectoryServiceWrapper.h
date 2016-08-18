@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) NSURL *websiteURL;
 @property (nullable, nonatomic, readonly) NSString *telephone;
 @property (nonatomic, readonly) NSArray<DLSTimetableWrapper *> *openingTimes;
+@property (nullable, nonatomic, readonly) NSString *openingTimesText;
+@property (nullable, nonatomic, readonly) NSString *serviceDescription;
 @property (nonatomic, readonly) float distance;
 
 @property (nonatomic, readonly) NSNumber *isHandleMinorAilments;

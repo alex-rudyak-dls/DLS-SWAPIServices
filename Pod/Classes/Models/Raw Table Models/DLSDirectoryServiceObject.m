@@ -32,7 +32,9 @@
         [mapping mapPropertiesFromDictionary:@{
                                                @"org_id": @"organisationId",
                                                @"category_id": @"categoryId",
-                                               @"additional_properties.handles_minor_ailments": @"isHandleMinorAilments"
+                                               @"additional_properties.handles_minor_ailments": @"isHandleMinorAilments",
+                                               @"opening_times_text": @"openingTimesText",
+                                               @"service_description": @"serviceDescription"
                                                }];
         [mapping hasMany:[DLSTimetableObject class] forKeyPath:@"opening_times" forProperty:@"openingTimesArray"];
         [mapping hasOne:[DLSLocationObject class] forKeyPath:@"location" forProperty:@"location"];

@@ -41,6 +41,10 @@
         if (oldSchemaVersion < 1) {
 
         }
+
+        if (oldSchemaVersion < 2) {
+            //INFO: added 'serviceDescription' and 'openingTimesText' properties
+        }
     };
     return realmConfiguration;
 }

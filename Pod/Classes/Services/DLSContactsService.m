@@ -13,12 +13,18 @@
 #import "DLSAccessTokenWrapper.h"
 
 
+OBJC_IMPORT NSString *DLSApiRequestSource;
+
+
 @implementation DLSContactsService
 
 - (BFTask<DLSContactObject *> *)sendContactInformation:(id)contactInfo
 {
     return [[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const entity = [EKSerializer serializeObject:contactInfo withMapping:[DLSContactObject objectMapping]];
+        NSMutableDictionary *mutableEntity = [entity mutableCopy];
+        mutableEntity[@"source"] = DLSApiRequestSource;
+        
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
         
         return [self.transport create:entity];

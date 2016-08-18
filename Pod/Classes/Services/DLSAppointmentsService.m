@@ -16,6 +16,9 @@
 #import "DLSAccessTokenWrapper.h"
 
 
+OBJC_IMPORT NSString *DLSApiRequestSource;
+
+
 @implementation DLSAppointmentsService
 
 - (BFTask *)fetchAll
@@ -48,6 +51,9 @@
 {
     return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAppointmentObject objectMapping]];
+        NSMutableDictionary *mutableAppointmentDict = [appointmentDict mutableCopy];
+        mutableAppointmentDict[@"request_source"] = DLSApiRequestSource;
+
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
 
         return [self.transport create:appointmentDict];

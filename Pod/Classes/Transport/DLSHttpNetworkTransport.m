@@ -120,9 +120,7 @@
     BFTaskCompletionSource *const taskSource = [BFTaskCompletionSource taskCompletionSource];
     NSString *const urlPath = [self urlPath];
     [self.transportQueue addOperationWithBlock:^{
-        NSMutableDictionary *mutableEntity = [NSMutableDictionary dictionaryWithDictionary:entity];
-        mutableEntity[@"request_source"] = DLSApiRequestSource;
-        [self.sessionManager POST:urlPath parameters:mutableEntity success:^(NSURLSessionDataTask *task, id responseObject) {
+        [self.sessionManager POST:urlPath parameters:entity success:^(NSURLSessionDataTask *task, id responseObject) {
             DDLogVerbose(@"[HTTP:Transport:CREATE]: Success. %@(`{%@}`) - %@ ||| `%@`", urlPath, entity, task.response, responseObject);
             [taskSource trySetResult:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

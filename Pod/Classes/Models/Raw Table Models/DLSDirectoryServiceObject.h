@@ -37,6 +37,8 @@ RLM_ARRAY_TYPE(DLSLocationObject);
 @property (nullable) NSString *website;
 @property (nullable) NSString *telephone;
 @property RLMArray<DLSTimetableObject *><DLSTimetableObject> *openingTimes;
+@property (nullable) NSString *openingTimesText;
+@property (nullable) NSString *serviceDescription;
 @property float distance;
 
 @property NSArray<DLSTimetableObject> *openingTimesArray;

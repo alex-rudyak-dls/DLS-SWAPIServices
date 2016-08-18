@@ -47,6 +47,9 @@
             [openingTimes addObject:[DLSTimetableWrapper timetableWithObject:timetable]];
         }
         _openingTimes = [NSArray arrayWithArray:openingTimes];
+
+        _openingTimesText = object.openingTimesText;
+        _serviceDescription = object.serviceDescription;
     }
     return self;
 }
@@ -70,6 +73,10 @@
 
 - (NSString *)openingTimesDescription
 {
+    if (self.openingTimesText.length) {
+        return self.openingTimesText;
+    }
+
     return [[self.openingTimes firstObject] shortTimetable];
 }
 
