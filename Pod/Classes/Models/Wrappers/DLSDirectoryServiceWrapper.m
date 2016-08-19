@@ -73,10 +73,6 @@
 
 - (NSString *)openingTimesDescription
 {
-    if (self.openingTimesText.length) {
-        return self.openingTimesText;
-    }
-
     return [[self.openingTimes firstObject] shortTimetable];
 }
 

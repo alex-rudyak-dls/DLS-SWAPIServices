@@ -33,7 +33,7 @@
                                                @"org_id": @"organisationId",
                                                @"category_id": @"categoryId",
                                                @"additional_properties.handles_minor_ailments": @"isHandleMinorAilments",
-                                               @"opening_times_text": @"openingTimesText",
+                                               @"opening_times_open_text": @"openingTimesText",
                                                @"description": @"serviceDescription"
                                                }];
         [mapping hasMany:[DLSTimetableObject class] forKeyPath:@"opening_times" forProperty:@"openingTimesArray"];
