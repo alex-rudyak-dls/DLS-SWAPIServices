@@ -29,6 +29,7 @@
         _address2 = object.address2;
         _town = object.town;
         _country = object.country;
+        _county = object.county;
         _postcode = object.postcode;
         _area = object.area;
         _websiteURL = [NSURL URLWithString:object.website];
@@ -50,6 +51,16 @@
     if (self.address2.length) {
         [address addObject:self.address2];
     }
+    if (self.town.length) {
+        [address addObject:self.town];
+    }
+    if (self.county.length) {
+        [address addObject:self.county];
+    }
+    if (self.postcode.length) {
+        [address addObject:self.postcode];
+    }
+
     return [address componentsJoinedByString:@", "];
 }
 

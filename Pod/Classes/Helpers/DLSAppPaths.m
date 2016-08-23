@@ -20,6 +20,6 @@ NSString *DLSUserDirectoryWithFilename(NSString *filename)
     return [DLSUserDirectory() stringByAppendingPathComponent:filename];
 }
 
-NSInteger DLSRealmSchemeVersion = 2;
+NSInteger DLSRealmSchemeVersion = 3;
 
 NS_ASSUME_NONNULL_END

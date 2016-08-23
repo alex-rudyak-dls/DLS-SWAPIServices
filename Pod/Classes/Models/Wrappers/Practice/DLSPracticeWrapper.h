@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) NSString *address2;
 @property (nullable, nonatomic, readonly) NSString *town;
 @property (nullable, nonatomic, readonly) NSString *country;
+@property (nullable, nonatomic, readonly) NSString *county;
 @property (nonatomic, readonly) NSString *postcode;
 @property (nullable, nonatomic, readonly) NSString *area;
 @property (nullable, nonatomic, readonly) NSURL *websiteURL;

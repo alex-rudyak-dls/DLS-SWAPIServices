@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable) NSString *address2;
 @property (nullable) NSString *town;
 @property (nullable) NSString *country;
+@property (nullable) NSString *county;
 @property (nullable) NSString *area;
 @property NSString *postcode;
 @property (nullable) NSString *website;
