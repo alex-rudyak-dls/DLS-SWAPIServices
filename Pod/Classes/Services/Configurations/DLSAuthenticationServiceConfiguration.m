@@ -9,6 +9,12 @@
 #import "DLSAuthenticationServiceConfiguration.h"
 #import "DLSAccessTokenObject.h"
 #import "DLSUserProfileObject.h"
+#import "DLSDirectoryServiceObject.h"
+#import "DLSTimetableObject.h"
+#import "DLSAccessTokenObject.h"
+#import "DLSUserProfileObject.h"
+#import "DLSCategoryObject.h"
+#import "DLSPracticeObject.h"
 #import "DLSAuthenticationService.h"
 #import "DLSAuthCredentials.h"
 

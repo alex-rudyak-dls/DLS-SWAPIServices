@@ -16,17 +16,7 @@
 {
     RLMRealmConfiguration *realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
     realmConfiguration.fileURL = [NSURL fileURLWithPath:DLSUserDirectoryWithFilename(@"app_default.realm")];
-    realmConfiguration.objectClasses = @[ [DLSApplicationSettingsObject class],
-                                          [DLSAccessTokenObject class],
-                                          [DLSUserProfileObject class],
-                                          [DLSLocationObject class],
-                                          [DLSDirectoryServiceObject class],
-                                          [DLSDayTime class],
-                                          [DLSTimetableObject class],
-                                          [DLSAccessTokenObject class],
-                                          [DLSUserProfileObject class],
-                                          [DLSCategoryObject class],
-                                          [DLSPracticeObject class]];
+    realmConfiguration.objectClasses = @[ [DLSApplicationSettingsObject class] ];
     realmConfiguration.schemaVersion = DLSRealmSchemeVersion;
     realmConfiguration.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
         if (oldSchemaVersion < 1) {
