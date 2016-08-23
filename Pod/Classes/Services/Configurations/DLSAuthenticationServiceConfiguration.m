@@ -22,7 +22,16 @@
     RLMRealmConfiguration *realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
     NSString *const filename = [NSString stringWithFormat:@"%@_instance.realm", credentials.username.lowercaseString];
     realmConfiguration.fileURL = [NSURL fileURLWithPath:DLSUserDirectoryWithFilename(filename)];
-    realmConfiguration.objectClasses = @[ [DLSAccessTokenObject class], [DLSUserProfileObject class] ];
+    realmConfiguration.objectClasses = @[ [DLSAccessTokenObject class],
+                                          [DLSUserProfileObject class],
+                                          [DLSLocationObject class],
+                                          [DLSDirectoryServiceObject class],
+                                          [DLSDayTime class],
+                                          [DLSTimetableObject class],
+                                          [DLSAccessTokenObject class],
+                                          [DLSUserProfileObject class],
+                                          [DLSCategoryObject class],
+                                          [DLSPracticeObject class]];
     realmConfiguration.schemaVersion = DLSRealmSchemeVersion;
     realmConfiguration.migrationBlock = ^(RLMMigration *migration, uint64_t oldSchemaVersion) {
         if (oldSchemaVersion < 1) {
