@@ -56,7 +56,7 @@ OBJC_IMPORT NSString *DLSApiRequestSource;
 
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
 
-        return [self.transport create:appointmentDict];
+        return [self.transport create:mutableAppointmentDict];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSAnonymousAppointmentObject *const registeredAppointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAnonymousAppointmentObject objectMapping]];
 
@@ -69,8 +69,10 @@ OBJC_IMPORT NSString *DLSApiRequestSource;
     return [[[self.authService checkToken] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         NSDictionary *const appointmentDict = [EKSerializer serializeObject:appointmentRequest withMapping:[DLSAnonymousAppointmentObject objectMapping]];
         [self.transport setAuthorizationHeader:[self.authService.token authenticationHeaderValue]];
+        NSMutableDictionary *mutableAppointmentDict = [appointmentDict mutableCopy];
+        mutableAppointmentDict[@"request_source"] = DLSApiRequestSource;
 
-        return [self.transport create:appointmentDict];
+        return [self.transport create:mutableAppointmentDict];
     }] continueWithExecutor:self.fetchExecutor withSuccessBlock:^id _Nullable(BFTask * _Nonnull task) {
         DLSAnonymousAppointmentObject *const registeredAppointment = [EKMapper objectFromExternalRepresentation:task.result withMapping:[DLSAnonymousAppointmentObject objectMapping]];
 
