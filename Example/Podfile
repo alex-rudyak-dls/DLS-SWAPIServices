@@ -3,15 +3,19 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 inhibit_all_warnings!
 
-target 'DLS-SWAPIServices_Example' do
+def mainpods
   pod "DLS-SWAPIServices", :path => "../"
-  
-  target 'DLS-SWAPIServices_Tests' do
-    inherit! :search_paths
+end
 
-    pod 'Specta'
-    pod 'Expecta'
-  end
+target 'DLS-SWAPIServices_Example' do
+  mainpods
+end
+
+target 'DLS-SWAPIServices_Tests' do
+  mainpods	
+
+  pod 'Specta'
+  pod 'Expecta'
 end
 
 
