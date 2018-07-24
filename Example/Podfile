@@ -1,7 +1,6 @@
 source 'https://ioscocoa:111111@scm.instinctools.ru/scm/git/cocoapods.specs'
 source 'https://github.com/CocoaPods/Specs.git'
 
-use_frameworks!
 inhibit_all_warnings!
 
 target 'DLS-SWAPIServices_Example' do
