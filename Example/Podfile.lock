@@ -40,7 +40,7 @@ PODS:
   - EasyMapping (0.15.4):
     - EasyMapping/Core (= 0.15.4)
   - EasyMapping/Core (0.15.4)
-  - Expecta (1.0.5)
+  - Expecta (1.0.6)
   - ITDispatchManagement (0.1.0)
   - NSDate-Escort (1.5.3)
   - OMGHTTPURLRQ (3.2.4):
@@ -87,7 +87,7 @@ PODS:
   - Realm (0.96.3):
     - Realm/Headers (= 0.96.3)
   - Realm/Headers (0.96.3)
-  - Specta (1.0.5)
+  - Specta (1.0.7)
   - Underscore.m (0.2.1)
 
 DEPENDENCIES:
@@ -119,13 +119,13 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 17fe8581f84914d5d7e6360f7c70022b173c3ae0
   DLS-SWAPIServices: 5e0143d298bd4771454579709f713bc93357ed82
   EasyMapping: e1f5942b26e1f5ae7129032117721a2972844f2f
-  Expecta: e1c022fcd33910b6be89c291d2775b3fe27a89fe
+  Expecta: 3b6bd90a64b9a1dcb0b70aa0e10a7f8f631667d5
   ITDispatchManagement: 86c25190f76d827a30aa0fab095e61c648043271
   NSDate-Escort: a01b1298d1ef3a79f6c205ef63a9781c41c8ee78
   OMGHTTPURLRQ: 9ac96bdf5c90a33f75836630729ea1adc312a9ed
   PromiseKit: 9007df2f9e2ef725467084ab3880cf932ab935a4
   Realm: 145d3cdf78a03aee71bde5381ad7e542bd541720
-  Specta: ac94d110b865115fe60ff2c6d7281053c6f8e8a2
+  Specta: 3e1bd89c3517421982dc4d1c992503e48bd5fe66
   Underscore.m: b86ca364d60509a39eb9c7886443c063b793aaba
 
 PODFILE CHECKSUM: 3ec6b04619f7e66ed37e48f532974efdf05b87aa
