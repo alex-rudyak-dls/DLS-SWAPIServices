@@ -14,4 +14,4 @@ before_install:
 
 script:
 - set -o pipefail && xcodebuild test -workspace Example/DLS-SWAPIServices.xcworkspace -scheme DLS-SWAPIServices-Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty
-- pod lib lint
+- pod lib lint --sources='https://ioscocoa:111111@scm.instinctools.ru/scm/git/cocoapods.specs,https://github.com/CocoaPods/Specs'
