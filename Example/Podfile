@@ -1,13 +1,21 @@
 source 'https://ioscocoa:111111@scm.instinctools.ru/scm/git/cocoapods.specs'
 source 'https://github.com/CocoaPods/Specs.git'
 
-target 'DLS-SWAPIServices_Example', :exclusive => true do
+inhibit_all_warnings!
+
+def mainpods
   pod "DLS-SWAPIServices", :path => "../"
 end
 
-target 'DLS-SWAPIServices_Tests', :exclusive => true do
-  pod "DLS-SWAPIServices", :path => "../"
+target 'DLS-SWAPIServices_Example' do
+  mainpods
+end
+
+target 'DLS-SWAPIServices_Tests' do
+  mainpods	
 
   pod 'Specta'
   pod 'Expecta'
 end
+
+

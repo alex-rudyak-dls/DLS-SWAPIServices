@@ -1,6 +1,6 @@
 # DLS-SWAPIServices
 
-[![CI Status](http://img.shields.io/travis/Alex Rudyak/DLS-SWAPIServices.svg?style=flat)](https://travis-ci.org/Alex Rudyak/DLS-SWAPIServices)
+[![Build Status](https://travis-ci.org/alex-rudyak-dls/DLS-SWAPIServices.svg?branch=master)](https://travis-ci.org/alex-rudyak-dls/DLS-SWAPIServices)
 [![Version](https://img.shields.io/cocoapods/v/DLS-SWAPIServices.svg?style=flat)](http://cocoapods.org/pods/DLS-SWAPIServices)
 [![License](https://img.shields.io/cocoapods/l/DLS-SWAPIServices.svg?style=flat)](http://cocoapods.org/pods/DLS-SWAPIServices)
 [![Platform](https://img.shields.io/cocoapods/p/DLS-SWAPIServices.svg?style=flat)](http://cocoapods.org/pods/DLS-SWAPIServices)
