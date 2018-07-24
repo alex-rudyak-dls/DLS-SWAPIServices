@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "DLS-SWAPIServices"
-  s.version          = "0.2.3"
+  s.version          = "0.2.12"
   s.summary          = "Set of classes to provide iOS app access to SW GP Services API"
 
 # This description is used to generate tags and improve search results.
@@ -32,16 +32,16 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'
-  s.resource_bundles = {
-    'DLS-SWAPIServices' => ['Pod/Assets/*.png']
-  }
+  #s.resource_bundles = {
+  #  'DLS-SWAPIServices' => ['Pod/Assets/*.png']
+  #}
 
 # s.public_header_files = 'Pod/Classes/Headers/*.h'
     s.frameworks = 'Foundation'
     s.dependency 'Realm', '0.96.3'
     s.dependency 'AFNetworking', '~> 2'
     s.dependency 'CocoaLumberjack', '~> 2.2.0'
-    s.dependency 'PromiseKit', '~> 1.5'
+    s.dependency 'PromiseKit', '~> 1.7.6'
     s.dependency 'EasyMapping', '0.15.4'
     s.dependency 'Underscore.m', '0.2.1'
     s.dependency 'NSDate-Escort', '1.5.3'
