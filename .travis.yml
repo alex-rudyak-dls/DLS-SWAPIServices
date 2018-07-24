@@ -5,9 +5,11 @@
 language: objective-c
 cache: cocoapods
 podfile: Example/Podfile
+env:
+- GIT_SSL_NO_VERIFY=true
 before_install:
 - gem install cocoapods # Since Travis is not always on latest version
-- GIT_SSL_NO_VERIFY=true pod repo add instinctools-cocoapods.specs https://ioscocoa:111111@scm.instinctools.ru/scm/git/cocoapods.specs
+- pod repo add instinctools-cocoapods.specs https://ioscocoa:111111@scm.instinctools.ru/scm/git/cocoapods.specs
 - pod install --project-directory=Example
 
 script:
